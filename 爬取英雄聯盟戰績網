@@ -1,0 +1,7 @@
+import requests
+import re
+from bs4 import BeautifulSoup
+res=requests.get("http://lol.moa.tw/summoner/show/%E5%B0%8F%E5%AD%A9%E5%AD%90%E7%9A%84%E6%8A%8A%E6%88%B2#tabs-recentgames")
+soup= BeautifulSoup(res.text)
+soupfind=soup.find_all("tr")
+#soup.select('.success')[4].text,soup.select('.strong')[4].text
