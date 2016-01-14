@@ -23,9 +23,10 @@ for i in range (20,0,-1):
 
 soup = BeautifulSoup(browser.page_source,"html.parser")
 
-#for i in range(20, 0, -1):
-string_list=['a','b','c']
-for ele in soup.select('.sum'):
-    print ele.text
-
+for ele in soup.select('.success'):
+	for ele2 in soup.select('.strong'):
+		elestrong=ele.text
+		ele2strong=ele2.text
+		print elestrong+ele2strong
+	
 browser.close()
