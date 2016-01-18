@@ -6,27 +6,110 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 import unittest, time, re,sys
+import chardet
 from bs4 import BeautifulSoup
+def moasearch(needtoKey):
+	browser.get('http://lol.moa.tw/summoner/index')
+	browser.find_element_by_id("searchlogsSn").send_keys(needtoKey)
+	browser.find_element_by_id("querySubmit").click()
+	browser.find_element_by_link_text(u"近期對戰").click()
+	time.sleep(5)
+	soup = BeautifulSoup(browser.page_source,"html.parser")
+	print u"您所查詢的玩家"+needtoKey+u"最近的對戰紀錄是:"
+	successNUM=0
+	for ele in soup.select('th'):
+		successNUM=successNUM+1
+		if successNUM==1:
+			print u"勝/敗:"+ele.text
+		if successNUM==2:
+			print u"對戰時間:"+ele.text
+			break
+
+	loopset=0
+	for ele in soup.select('.success'):
+		for ele2 in soup.select('.strong'):
+			loopset=loopset+1
+			if loopset==24:
+				print u"擊殺:",ele2.text
+			if loopset==25:
+				print u"死亡:",ele2.text
+			if loopset==26:
+				print u"助攻:",ele2.text
+				print "------------------------------------------------------"
+				break 
 #指定使用Firefox瀏覽器
 browser=webdriver.Firefox()
 #進入英雄聯盟戰績網的index
 browser.get('http://lol.moa.tw/summoner/index')
-key = raw_input("Please set Player ID=").decode(sys.stdin.encoding)
+print (u"請輸入要查詢的玩家""ID=")
+key = raw_input().decode(sys.stdin.encoding)
 browser.find_element_by_id("searchlogsSn").send_keys(key)
-
 browser.find_element_by_id("querySubmit").click()
 browser.find_element_by_link_text(u"近期對戰").click()
 time.sleep(5)
-for i in range (20,0,-1):
-    browser.find_element_by_id("summoner_more").click()
-   
-
+f = open('new.txt','a')   
 soup = BeautifulSoup(browser.page_source,"html.parser")
+print u"您所查詢的玩家  "+key+u"  最近的對戰紀錄是:"
+successNUM=0
+for ele in soup.select('th'):
+	successNUM=successNUM+1
+	if successNUM==1:
+		print u"勝/敗:"+ele.text
+	if successNUM==2:
+		print u"對戰時間:"+ele.text
+		break
 
+loopset=0
 for ele in soup.select('.success'):
 	for ele2 in soup.select('.strong'):
-		elestrong=ele.text
-		ele2strong=ele2.text
-		print elestrong+ele2strong
-	
-browser.close()
+		loopset=loopset+1
+		if loopset==24:
+			print u"擊殺:",ele2.text
+		if loopset==25:
+			print u"死亡:",ele2.text
+		if loopset==26:
+			print u"助攻:",ele2.text
+			print "------------------------------------------------------"
+			break 
+
+PlayerNum=0
+print u"最近一場對戰所遇到的十個玩家:"
+try:
+	for ele in soup.select('.sum'):
+		PlayerNum=PlayerNum+1
+		print ele.text
+		if PlayerNum==1:
+			playersearh1=ele.text
+			moasearch(playersearh1)
+		if PlayerNum==2:
+			playersearh2=ele.text
+			moasearch(playersearh2)
+		if PlayerNum==3:
+			playersearh3=ele.text
+			moasearch(playersearh3)
+		if PlayerNum==4:
+			playersearh4=ele.text
+			moasearch(playersearh4)
+		if PlayerNum==5:
+			playersearh5=ele.text
+			moasearch(playersearh5)
+		if PlayerNum==6:
+			playersearh6=ele.text
+			moasearch(playersearh6)
+		if PlayerNum==7:
+			playersearh7=ele.text
+			moasearch(playersearh7)
+		if PlayerNum==8:
+			playersearh8=ele.text
+			moasearch(playersearh8)
+		if PlayerNum==9:
+			playersearh9=ele.text
+			moasearch(playersearh9)
+		if PlayerNum==10:
+			playersearh10=ele.text
+			moasearch(playersearh10)
+			break
+except:
+	print u"查詢完畢"
+	browser.close()
+	pass
