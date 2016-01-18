@@ -11,17 +11,26 @@ import getpass
 #指定使用Firefox瀏覽器
 student_browser=webdriver.Firefox()
 #進入學生資訊網的index
-print u"請輸入登入帳號:"
+print u"--------------------------------------------------------------------------------------"
+print u"歡迎使用台北海洋技術學院自動請假系統，這是由一個每天睡到自然醒的學長寫的"
+print u"只要把這個腳本掛到開機啟動資料夾內"
+print u"一起床開電腦後"
+print u"就會幫你找找看哪個老師又記你曠課了，這時此程式就會自動執行"
+print u"然後....你就可以繼續去睡覺or玩遊戲惹"
+print u"現在～"
+print u"--------------------------------------------------------------------------------------"
+print u"請輸入學生資訊網登入帳號:"
 account_key = raw_input().decode(sys.stdin.encoding)
+print u"--------------------------------------------------------------------------------------"
 print u"請輸入學生資訊網密碼:"
 password_key = getpass.getpass("").decode(sys.stdin.encoding)
-
+print u"--------------------------------------------------------------------------------------"
 
 student_browser.get('http://140.129.253.29/Usc/HomePage/flogin.aspx')
 student_browser.find_element_by_name("txtAccount").send_keys(account_key)
 student_browser.find_element_by_name("txtPwd").send_keys(password_key)
 student_browser.find_element_by_css_selector("input[type=\"submit\"]").click()
-student_browser.get('http://140.129.253.29/Usc/Std/Usc_Std_ApplyCase.aspx')  #案件申請網頁
+student_browser.get('http://140.129.253.29/Usc/Std/Usc_Std_ApplyCase.aspx')
 Select(student_browser.find_element_by_name("ApplyUnit")).select_by_visible_text(u"生輔組")
 Select(student_browser.find_element_by_name("ApplyItem")).select_by_visible_text(u"學生請假單")
 student_browser.find_element_by_name("add").click()
@@ -37,4 +46,4 @@ Select(student_browser.find_element_by_name("Hcode")).select_by_visible_text(u"�
 print u"輸入你不小心生病的理由:"
 Reasoninput = raw_input().decode(sys.stdin.encoding)
 student_browser.find_element_by_name("Reason").send_keys(Reasoninput)
-student_browser.find_element_by_css_selector("input[type=\"button\"]").click()
+#student_browser.find_element_by_css_selector("input[type=\"button\"]").click()
