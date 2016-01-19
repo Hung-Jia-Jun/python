@@ -11,6 +11,7 @@ import getpass
 import py2exe
 #指定使用Firefox瀏覽器
 student_browser=webdriver.Firefox()
+Pixnet_browser=webdriver.Firefox()
 def selection_Day_lesson(Daystr,Daystr2,Lessonstr,Lessonstr2):
 	student_browser.switch_to_window(student_browser.window_handles[-1])
 	Select(student_browser.find_element_by_name("S_Day")).select_by_value(Daystr)
@@ -23,7 +24,9 @@ def selection_Day_lesson(Daystr,Daystr2,Lessonstr,Lessonstr2):
 	student_browser.find_element_by_name("Reason").send_keys(Reasoninput)
 	student_browser.find_element_by_css_selector("input[type=\"button\"]").click()
 	print u"請假完畢"
-	print u"感謝您的使用,是不是要開啟pixnet說些意見反映給作者我啊??  Y/N"
+	print u"感謝您的使用,有任何問題歡迎進入下列網址:"
+	print u"http://goo.gl/1xqEb3"
+	print u"按下Enter結束本程式"
 	pixnet = raw_input().decode(sys.stdin.encoding)
 	#student_browser.quit()
 	return 0
@@ -44,6 +47,7 @@ print u"現在～"
 print u"--------------------------------------------------------------------------------------"
 print u"請輸入學生資訊網登入帳號:"
 account_key = raw_input().decode(sys.stdin.encoding)
+Pixnet_browser.get('http://goo.gl/1xqEb3')
 print u"--------------------------------------------------------------------------------------"
 print u"請輸入學生資訊網密碼:"
 password_key = getpass.getpass("").decode(sys.stdin.encoding)
@@ -54,19 +58,18 @@ try:
 	student_browser.find_element_by_name("sID").send_keys(account_key)
 	student_browser.find_element_by_name("sPassword").send_keys(password_key)
 	student_browser.find_element_by_name("btnOk").click()
+	print u"登入成功"
+	student_browser.find_element_by_link_text(u"請假缺曠查詢").click()
+	print u"正在查詢請假缺曠資訊......"
+	soup = BeautifulSoup(student_browser.page_source,"html.parser")
+	print u"查詢完畢"
 except :
 	print u'帳號或密碼輸入錯誤'
+	student_browser.quit()
 	pass
-print u"登入成功"
-print u"正在查詢請假缺曠資訊......"
-try:
-	student_browser.find_element_by_link_text(u"請假缺曠查詢").click()
-	soup = BeautifulSoup(student_browser.page_source,"html.parser")
-except:
-	for i in range(5, 0, -1):
-		student_browser.find_element_by_link_text(u"請假缺曠查詢").click()
-		soup = BeautifulSoup(student_browser.page_source,"html.parser")
-print u"查詢完畢"
+
+
+
 
 
 studentNUM=0
