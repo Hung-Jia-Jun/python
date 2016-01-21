@@ -1,4 +1,5 @@
 #coding=utf-8
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -9,6 +10,7 @@ import unittest, time, re,sys
 from bs4 import BeautifulSoup
 import getpass
 import py2exe
+
 #指定使用Firefox瀏覽器
 student_browser=webdriver.Firefox()
 def selection_Day_lesson(Daystr,Daystr2,Lessonstr,Lessonstr2):
@@ -27,6 +29,20 @@ def selection_Day_lesson(Daystr,Daystr2,Lessonstr,Lessonstr2):
 	pixnet = raw_input().decode(sys.stdin.encoding)
 	#student_browser.quit()
 	return 0
+
+def custmoterControlsick():
+{
+	print u"請輸入想直接請假的開始日期:"
+	custmoterDaystr=raw_input().decode(sys.stdin.encoding)
+	print u"請輸入想直接請假的結束日期:"	
+	custmoterDaystr2=raw_input().decode(sys.stdin.encoding)
+	print u"請輸入想請假的開始節數:"
+	custmoterLessonstr=raw_input().decode(sys.stdin.encoding)
+	print u"請輸入想請假的結束節數:"
+	custmoterLessonstr2=raw_input().decode(sys.stdin.encoding)
+	selection_Day_lesson(custmoterDaystr,custmoterDaystr2,custmoterLessonstr,custmoterLessonstr2)
+	return 0 
+}
 
 
 
@@ -48,14 +64,21 @@ print u"自動請假一次只能同天請兩節"
 print u"1.自動請假"
 print u"2.手動請假"
 selectmode = raw_input().decode(sys.stdin.encoding)
-automode=u"1"
-normalmode=u"2"
 print u"請輸入學生資訊網登入帳號:"
 account_key = raw_input().decode(sys.stdin.encoding)
 print u"--------------------------------------------------------------------------------------"
 print u"請輸入學生資訊網密碼:"
 password_key = getpass.getpass("").decode(sys.stdin.encoding)
 print u"--------------------------------------------------------------------------------------"
+
+for casevar in switch(selectmode)
+	if casevar("1"):
+		print u"自動模式"
+	if casevar("2")
+		print u"手動模式" 
+	if casevar (""):
+		print u"您尚未輸入選擇模式"
+
 
 try:
 	print u"正在登入學生資訊網......"
