@@ -9,6 +9,11 @@ import unittest, time, re,sys
 from bs4 import BeautifulSoup
 import datetime, time
 import io
+def WriteTxt(writeTxtInput):
+	f = io.open('D:\unity\Unity_5.1_Project\Chinese_Voice_Project\Assets\Script\A.txt', 'w',encoding = 'UTF-8')
+	f.write(writeTxtInput)
+	time.sleep(5)
+	f.truncate()
 cwd="C:\Python27\Scripts\ChromeWebDrive\chromedriver.exe"
 browser=webdriver.Chrome(cwd)
 browser.get('https://www.google.com/intl/en/chrome/demos/speech.html')
@@ -24,10 +29,6 @@ soup = BeautifulSoup(browser.page_source,"html.parser")
 for ele in soup.select('.interim'):
 	print ele.text
 	writeTxtInput=ele.text
-	WriteTxt(writeTxtInput)
+WriteTxt(writeTxtInput)
 browser.find_element_by_id("start_button").click()
-def WriteTxt(writeText):
-	f = io.open('A.txt', 'w',encoding = 'UTF-8')
-	f.write(writeText)
-	time.sleep(5)
-	f.truncate()
+WriteTxt(writeTxtInput)
