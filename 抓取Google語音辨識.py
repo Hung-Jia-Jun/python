@@ -10,11 +10,11 @@ from bs4 import BeautifulSoup
 import datetime, time
 import io
 def WriteTxt(writeTxtInput):
-	f = io.open('D:\unity\Unity_5.1_Project\Chinese_Voice_Project\Assets\Script\A.txt', 'w',encoding = 'UTF-8')
+	f = io.open('D:\Speech recognition5.3\Assets\A.txt', 'w',encoding = 'UTF-8')
 	f.write(writeTxtInput)
 	time.sleep(5)
 	f.truncate()
-cwd="C:\Python27\Scripts\ChromeWebDrive\chromedriver.exe"
+cwd="C:\Python27\Scripts\WebDrive\chromedriver.exe"
 browser=webdriver.Chrome(cwd)
 browser.get('https://www.google.com/intl/en/chrome/demos/speech.html')
 
@@ -30,5 +30,5 @@ for ele in soup.select('.interim'):
 	print ele.text
 	writeTxtInput=ele.text
 WriteTxt(writeTxtInput)
-browser.find_element_by_id("start_button").click()
-WriteTxt(writeTxtInput)
+for i in io.open('D:\Speech recognition5.3\Assets\A.txt', 'r',encoding = 'UTF-8'):
+  print i
