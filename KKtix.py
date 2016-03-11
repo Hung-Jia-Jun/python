@@ -1,78 +1,76 @@
-import requests
-import urllib2,pdb
-from bs4 import BeautifulSoup as bs
-import string,random,sys,re
-from requests import Request, Session
-print u"CSRF token:"
-#csrfToken = raw_input().decode(sys.stdin.encoding)
-print u"KKtixToken:"
-#kktixToken=raw_input().decode(sys.stdin.encoding)
-def randomword(length):
-   return ''.join(random.choice(string.lowercase) for i in range(length))
+# -*- coding: utf-8 -*-
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoAlertPresentException
+import unittest, time, re,sys
+from bs4 import BeautifulSoup
+import datetime, time
+import io
+import os
+import unittest, time, re,sys
+import  getpass 
 
-def  GenPassword(length):
+browser=webdriver.Firefox()
+browser.get("https://kktix.com/users/sign_in?back_to=http%3A%2F%2Fkktix.com%2F")
+print u"請輸入你的帳號:"
+Account = raw_input().decode(sys.stdin.encoding)
+print u"請輸入你的密碼:"
+Password = getpass.getpass("") 
+print u"要執行幾次??"
+settime = raw_input().decode(sys.stdin.encoding)
+intsettime=int(settime)
+print u"請輸入需移動到的訂票頁面:"
+Url=raw_input().decode(sys.stdin.encoding)
+browser.find_element_by_id("user_login").send_keys(Account)
+browser.find_element_by_id("user_password").send_keys(Password)
+browser.find_element_by_name("commit").click()
+def openUrl():
+	Enter=False
+	browser.get(Url)
+	time.sleep(2)
+	try:
+		browser.find_element_by_id("person_agree_terms").click()
+		
+	except :
+		while Enter==False:
+			browser.get(Url)
+			try:
+				browser.find_element_by_id("person_agree_terms").click()
+			except :
+				Enter=False
+			else:
+				Enter=True
+				pass
+		
+			
+	else :
+		Enter=True
+		pass
+	try:
+		browser.find_element_by_css_selector("label.checkbox-inline.ng-binding").click()
+		browser.find_element_by_css_selector("button.btn-default.plus").click()
+		browser.find_element_by_css_selector("button.btn-default.plus").click()
+		browser.find_element_by_css_selector("button.btn-default.plus").click()
+		browser.find_element_by_css_selector("button.btn-default.plus").click()
+		try:
+			browser.find_element_by_xpath("//div[@id='registrationsNewApp']/div/div[5]/div[5]/button").click()
+		except :
+			browser.find_element_by_xpath("//div[@id='registrationsNewApp']/div/div[5]/div[4]/button").click()
+			pass
+	except :
+		print u"發現驗證碼"
+		print u"請更換IP位置後"
+		print u"請按任意鍵退出"
+		raw_input().decode(sys.stdin.encoding)
+		
 
-    numOfNum =  random.randint( 1 ,length - 1 )
-    numOfLetter =  length -  numOfNum
+	pass
 
-    slcNum =  [random.choice(string.digits) for  i in  range (numOfNum)]
-
-    slcLetter =  [random.choice(string.lowercase) for  i in  range (numOfLetter)]
-
-    slcChar =  slcNum +  slcLetter
-    random.shuffle(slcChar)
-
-    genPwd =  ''.join([i for  i in  slcChar])
-    return  genPwd
-GetCookie={
-    "__asc":"5cdcafe71534c730a0218ce20e4",
-    "__auc":"5cdcafe71534c730a0218ce20e4",
-    "_ga":"GA1.2.308046586.1457276521",
-    "kktix_session_token_v2":"ae5d054a7f3b4f3523b1384ace7bfb57",
-    "X-DevTools-Emulate-Network-Conditions-Client-Id":"43940E8F-A956-427B-9532-C7AC34BB6BB2",
-}
-my_referer='https://kktix.com/events/chaiparty-0401/registrations/new'
-header={
-"Host":"queue.kktix.com",
-"Content-Length": "468",
-"Origin":"https://kktix.com",
-"User-Agent":"Mozilla/5.0(Linux; X11)",
-"Content-Type":"text/plain",
-"Cookie": "__asc:5cdcafe71534c730a0218ce20e4,__auc:5cdcafe71534c730a0218ce20e4,_ga:GA1.2.308046586.1457276521,kktix_session_token_v2:ae5d054a7f3b4f3523b1384ace7bfb57,X-DevTools-Emulate-Network-Conditions-Client-Id:43940E8F-A956-427B-9532-C7AC34BB6BB2",
-'Referer':"https://kktix.com/events/chaiparty-0401/registrations/new",
-"X-DevTools-Emulate-Network-Conditions-Client-Id":"43940E8F-A956-427B-9532-C7AC34BB6BB2",
-"DNT ": "1"
-
-}
-datas={
-    "tickets":
-    {
-        "id":48732,
-        "quantity":4,
-        "invitationCodes":"[]",
-        "agreeTerm":"true",
-        "member_code": "",
-        "use_qualification_id":"null"
-    }
-
-}
-csrfToken = '' .join(randomword(86))
-res=requests.post("https://queue.kktix.com/queue/scandaltour2016?authenticity_token=67hR9Cv4tyj85lU0rHaMfavHin%2BdwDJRBiLjGjf3xdGT9urmLKAHQGLT63y36cM0Y8eBH0XI8mqh5zV7UfSidw%3D%3D",data=datas,headers=header,cookies=GetCookie)
-pdb.set_trace()
-print res.text
-RequestGet={
-    "Connection":"keep-alive",
-    "Cookie":GetCookie,
-    "DNT":"1",
-    "Host":"queue.kktix.com",
-    "Origin":"https://kktix.com",
-    "X-DevTools-Emulate-Network-Conditions-Client-Id":"43940E8F-A956-427B-9532-C7AC34BB6BB2",
-    "Referer":"https://kktix.com/events/scandaltour2016/registrations/new",
-    "Accept-Encoding":"gzip,deflate,sdch",
-    "User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36"
-}
-Xref={"X-DevTools-Emulate-Network-Conditions-Client-Id":"43940E8F-A956-427B-9532-C7AC34BB6BB2"}
-urlreq="https://queue.kktix.com/queue/token/8c94606d-3744-4c80-8e91-d51f68a02e9e"
-req = Request('GET', urlreq,data=Xref,headers=RequestGet)
-#res2=s.get("https://queue.kktix.com/queue/token/9a3991ba-2477-4cdd-9c23-12a636c7379a",headers=RequestGet)
-#print req.text
+for i in range(intsettime, 0, -1):
+	openUrl()
+	print u"輸入完資料後請按Enter鍵下一步"
+	raw_input().decode(sys.stdin.encoding)
+	
