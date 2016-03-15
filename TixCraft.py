@@ -1,10 +1,10 @@
 #coding=utf-8
 import requests
 import urllib2
-from bs4 import BeautifulSoup 
+from bs4 import BeautifulSoup
 import string,sys,re,io,os
 from requests import Request, Session
-from  urllib  import  quote 
+from  urllib  import  quote
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -17,8 +17,8 @@ UrlArray=[]
 findList=[]
 #sys.setrecursionlimit(10000)
 tmpList=0
-CWD="C:\Python27\Scripts\ChromeDriver\chromedriver.exe"
-browser=webdriver.Chrome(CWD)
+CWD="C:\chromedriver.exe"
+browser = webdriver.Chrome(CWD)
 browser.get("https://tixcraft.com/login")
 print u"請先登入"
 raw_input().decode(sys.stdin.encoding)
@@ -83,7 +83,7 @@ def CanBuyTicket():
     elenum2=0
     ticketText=-1
     ArrayLen=0
-    
+
     for ele in soup.select("li"):
         elenum=elenum+1
         ticketText=ticketText+1
@@ -101,17 +101,17 @@ def CanBuyTicket():
                 if eleTicket.find(userfindWord1) >0:
                     ReturnUrl_intNum=ArrayLen-1    #如果發現使用者輸入的關鍵字就將目前陣列位置回傳出
                     findList.append([ReturnUrl_intNum])#在陣列中追加找到的位置，以便打開網頁
-  
+
 def EndUrl():#剖析使用者輸入的網頁內是否有"立即購票"連結
     isUrlOpen=False
     elenumSelect1=0
     s1=requests.Session()
     while isUrlOpen==False:
         try:
-              
+
             res2=s1.get(TicketUrl2)
             soup1 = BeautifulSoup(res2.text,"html.parser")
-            
+
             for ele in soup1.select("input"):
                 elenumSelect1=elenumSelect1+1
                 if elenumSelect1==3:
@@ -121,10 +121,10 @@ def EndUrl():#剖析使用者輸入的網頁內是否有"立即購票"連結
             eleEndUrl="https://tixcraft.com"+elehref
             isUrlOpen==True
             return str(eleEndUrl)
-        
+
         except :
            print u"未開放購票"
-        
+
         pass
     pass
 EndUrl()
@@ -139,7 +139,7 @@ findWord=findWord.decode("utf-8")
 
 
 print u"所有票種狀態:"
-print AllTicket() 
+print AllTicket()
 print u"可以買的票種:"
 CanBuyTicket()
 UrlGet()
@@ -151,7 +151,7 @@ res=s2.get(gotoUrl)
 soup2 = BeautifulSoup(res.text,"html.parser")
 for ele in soup2.select("select"):#剖析網頁中"確認購買"的按鈕ID
     eletostr=str(ele)
-    eletostr2=eletostr.split("=")[1] 
+    eletostr2=eletostr.split("=")[1]
     eletostr3=eletostr2.split('''"''')[1]
     eletostr4=str(eletostr3)#將結果存給eletostr4供後續點擊之用
 
