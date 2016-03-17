@@ -4,24 +4,22 @@ import urllib2
 from bs4 import BeautifulSoup
 import string,sys,re,io,os
 from requests import Request, Session
-from  urllib  import  quote
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import Select
-from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import NoAlertPresentException
+#from  urllib  import  quote
 isbreak=0
 ReturnUrl_intNum=0
 UrlArray=[]
 findList=[]
-#sys.setrecursionlimit(10000)
 tmpList=0
-CWD="C:\chromedriver.exe"
-browser = webdriver.Chrome(CWD)
-browser.get("https://tixcraft.com/login")
-print u"請先登入"
-raw_input().decode(sys.stdin.encoding)
+print u"請將網頁背景的cookie貼上來"
+GetCSRF=raw_input().decode(sys.stdin.encoding)
+GetCSRF=str(GetCSRF)
+GetSID=GetCSRF.split("SID=")[1]
+SID=GetSID.split(";")[0]
+GetCSRF=GetCSRF.split("CSRFTOKEN=")[1]
+CSRF=GetCSRF.split(";")[0]
+
+
+
 
 print u"請輸入購票網址:"
 TicketUrl=raw_input().decode(sys.stdin.encoding)
@@ -43,16 +41,6 @@ def magic(numList):         # [1,2,3]
     s3 = ''.join(s3)          # '123'
     s3 = int(s3)              # 123
     return s3
-def AllTicket ():
-    elenum=0
-    ticketText=-1
-    for ele in soup.select("li"):
-        elenum=elenum+1
-        ticketText=ticketText+1
-        if elenum>9:
-            eleencode=ele.text
-            eleencode2=eleencode.encode(sys.stdin.encoding, "replace").decode(sys.stdin.encoding)
-            print eleencode2.replace("?","*")#替換"?"成"*"
 def UrlGet():
     elenum=0
     for ele in soup.select("script"):
@@ -60,13 +48,9 @@ def UrlGet():
     eleurl2=eleurl.split("{")[8]
     eleurl3=eleurl2
     eleurl3=eleurl2.split(":")
-
-
     try:
-        tickettotal=0
         elenumlist=0
         for i in range(100,0,-1):
-            tickettotal=tickettotal+1
             elenumlist=elenumlist+1
             eleurl4=eleurl3[elenumlist]
             eleurl5=OnlyCharNum(eleurl4)
@@ -80,27 +64,20 @@ def UrlGet():
 
 def CanBuyTicket():
     elenum=0
-    elenum2=0
-    ticketText=-1
     ArrayLen=0
 
     for ele in soup.select("li"):
         elenum=elenum+1
-        ticketText=ticketText+1
-
         if elenum>9:
             find_ele=ele.text
             find_ele.find(findWord)
             if find_ele.find(findWord)<0:#找尋是否有"已賣完"的關鍵字，有的話就顯示在可購買的列表中
-                elenum2=elenum2+1
                 eleencode=ele.text
                 eleencode2=eleencode.encode(sys.stdin.encoding, "replace").decode(sys.stdin.encoding)#將ASCII中不認識的字元替換成"?"
-                print elenum2,eleencode2.replace("?","*")#為了美觀將"?"替換成"*"
                 eleTicket=eleencode2.replace("?","*")#將替換後的值存給eleTicket
                 ArrayLen=ArrayLen+1
                 if eleTicket.find(userfindWord1) >0:
-                    ReturnUrl_intNum=ArrayLen-1    #如果發現使用者輸入的關鍵字就將目前陣列位置回傳出
-                    findList.append([ReturnUrl_intNum])#在陣列中追加找到的位置，以便打開網頁
+                    findList.append([ArrayLen-1])#在陣列中追加找到的位置，以便打開網頁
 
 def EndUrl():#剖析使用者輸入的網頁內是否有"立即購票"連結
     isUrlOpen=False
@@ -108,7 +85,6 @@ def EndUrl():#剖析使用者輸入的網頁內是否有"立即購票"連結
     s1=requests.Session()
     while isUrlOpen==False:
         try:
-
             res2=s1.get(TicketUrl2)
             soup1 = BeautifulSoup(res2.text,"html.parser")
 
@@ -124,48 +100,51 @@ def EndUrl():#剖析使用者輸入的網頁內是否有"立即購票"連結
 
         except :
            print u"未開放購票"
-
         pass
     pass
+
+
+GetCookie={
+    "SID":SID,
+    "CSRFTOKEN":CSRF,
+}
+
 EndUrl()
 eleEndUrl=EndUrl()
-print eleEndUrl
 s4=requests.Session()
 res=s4.get(eleEndUrl)
 soup = BeautifulSoup(res.text,"html.parser")
 findWord="已售完"
 findWord=findWord.decode("utf-8")
-
-
-
-print u"所有票種狀態:"
-print AllTicket()
-print u"可以買的票種:"
 CanBuyTicket()
 UrlGet()
+CSRFGet=0
 gotoUrlnum=findList[0]#將取得的list陣列存入變數以便轉換為int
 gotoUrlnum=magic(gotoUrlnum)#轉換list變成int
 gotoUrl=UrlArray[gotoUrlnum]
 s2=requests.Session()
-res=s2.get(gotoUrl)
+res=s2.get(gotoUrl,cookies=GetCookie)
 soup2 = BeautifulSoup(res.text,"html.parser")
+for ele in soup2.select("input"):
+    CSRFGet=CSRFGet+1
+    if CSRFGet ==2:
+        ele=str(ele)
+        ele=ele.split("=")[4]
+        ele=ele.replace("/>","")
+        ele2=ele.replace('''"''',"")
+
 for ele in soup2.select("select"):#剖析網頁中"確認購買"的按鈕ID
     eletostr=str(ele)
-    eletostr2=eletostr.split("=")[1]
-    eletostr3=eletostr2.split('''"''')[1]
-    eletostr4=str(eletostr3)#將結果存給eletostr4供後續點擊之用
-
-def TicketNeedNum(ticketNum):
-    try:
-        select.select_by_visible_text(ticketNum)
-        pass
-    except:
-        print u"請輸入正確的購票張數"
-        ticketNum=raw_input().decode(sys.stdin.encoding)
-        TicketNeedNum(ticketNum)
-        pass
-    pass
-browser.get(gotoUrl)
-select = Select(browser.find_element_by_id(eletostr4))
-TicketNeedNum(ticketNum)
-browser.find_element_by_id("ticketPriceSubmit").click()
+    eletostr=eletostr.split("=")[1]
+    eletostr=eletostr.split('''"''')[1]
+    eletostr=eletostr.replace("TicketForm_ticketPrice_","")
+    eletostr="TicketForm[ticketPrice]["+eletostr+"]"
+datas={
+    "CSRFTOKEN":ele2,
+    eletostr:ticketNum,
+    "yt":"確認張數"
+}
+s=requests.Session()
+res=s.post(gotoUrl,data=datas,cookies=GetCookie)
+res5=s.get("https://tixcraft.com/ticket/check",cookies=GetCookie)
+print u"購買完成"
