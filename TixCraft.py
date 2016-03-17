@@ -4,31 +4,9 @@ import urllib2
 from bs4 import BeautifulSoup
 import string,sys,re,io,os
 from requests import Request, Session
-#from  urllib  import  quote
-isbreak=0
-ReturnUrl_intNum=0
+import time
 UrlArray=[]
 findList=[]
-tmpList=0
-print u"請將網頁背景的cookie貼上來"
-GetCSRF=raw_input().decode(sys.stdin.encoding)
-GetCSRF=str(GetCSRF)
-GetSID=GetCSRF.split("SID=")[1]
-SID=GetSID.split(";")[0]
-GetCSRF=GetCSRF.split("CSRFTOKEN=")[1]
-CSRF=GetCSRF.split(";")[0]
-
-
-
-
-print u"請輸入購票網址:"
-TicketUrl=raw_input().decode(sys.stdin.encoding)
-TicketUrl2=TicketUrl.replace("detail","game")
-
-print u"請輸入指定票種:"
-userfindWord1=raw_input().decode(sys.stdin.encoding)
-print u"請輸入購買張數"
-ticketNum=raw_input().decode(sys.stdin.encoding)
 def  OnlyCharNum(s,oth = ''):#用這個函式可以將特殊字元去除掉，只顯示fomart這個字串列中的數值
     s2  =  s.lower();
     fomart  =  'abcdefghijklmnopqrstuvwxyz0123456789_"/'
@@ -79,6 +57,7 @@ def CanBuyTicket():
                 if eleTicket.find(userfindWord1) >0:
                     findList.append([ArrayLen-1])#在陣列中追加找到的位置，以便打開網頁
 
+
 def EndUrl():#剖析使用者輸入的網頁內是否有"立即購票"連結
     isUrlOpen=False
     elenumSelect1=0
@@ -97,27 +76,45 @@ def EndUrl():#剖析使用者輸入的網頁內是否有"立即購票"連結
             eleEndUrl="https://tixcraft.com"+elehref
             isUrlOpen==True
             return str(eleEndUrl)
-
         except :
            print u"未開放購票"
         pass
     pass
 
 
+isbreak=0
+ReturnUrl_intNum=0
+
+tmpList=0
+
+print u"請將網頁背景的cookie貼上來"
+GetCSRF=raw_input().decode(sys.stdin.encoding)
+GetCSRF=str(GetCSRF)
+GetSID=GetCSRF.split("SID=")[1]
+SID=GetSID.split(";")[0]
+GetCSRF=GetCSRF.split("CSRFTOKEN=")[1]
+CSRF=GetCSRF.split(";")[0]
+
 GetCookie={
     "SID":SID,
     "CSRFTOKEN":CSRF,
 }
 
-EndUrl()
+findWord="已售完"
+findWord=findWord.decode("utf-8")
+print u"請輸入購票網址:"
+TicketUrl=raw_input().decode(sys.stdin.encoding)
+TicketUrl2=TicketUrl.replace("detail","game")
+print u"請輸入指定票種:"
+userfindWord1=raw_input().decode(sys.stdin.encoding)
 eleEndUrl=EndUrl()
 s4=requests.Session()
 res=s4.get(eleEndUrl)
 soup = BeautifulSoup(res.text,"html.parser")
-findWord="已售完"
-findWord=findWord.decode("utf-8")
 CanBuyTicket()
 UrlGet()
+
+
 CSRFGet=0
 gotoUrlnum=findList[0]#將取得的list陣列存入變數以便轉換為int
 gotoUrlnum=magic(gotoUrlnum)#轉換list變成int
@@ -131,20 +128,32 @@ for ele in soup2.select("input"):
         ele=str(ele)
         ele=ele.split("=")[4]
         ele=ele.replace("/>","")
-        ele2=ele.replace('''"''',"")
+        ele2str=ele.replace('''"''',"")
+    for ele in soup2.select("select"):#剖析網頁中"確認購買"的按鈕ID
+        eletostr=str(ele)
+        eletostr=eletostr.split("=")[1]
+        eletostr=eletostr.split('''"''')[1]
+        eletostr=eletostr.replace("TicketForm_ticketPrice_","")
+        eletostr="TicketForm[ticketPrice]["+eletostr+"]"
+print u"請輸入購買張數"
+ticketNum=raw_input().decode(sys.stdin.encoding)
 
-for ele in soup2.select("select"):#剖析網頁中"確認購買"的按鈕ID
-    eletostr=str(ele)
-    eletostr=eletostr.split("=")[1]
-    eletostr=eletostr.split('''"''')[1]
-    eletostr=eletostr.replace("TicketForm_ticketPrice_","")
-    eletostr="TicketForm[ticketPrice]["+eletostr+"]"
+
+
+
+
+
+
 datas={
-    "CSRFTOKEN":ele2,
+    "CSRFTOKEN":ele2str,
     eletostr:ticketNum,
     "yt":"確認張數"
 }
 s=requests.Session()
+tStart=time.time()#計時開始------------------------------------------------------------
 res=s.post(gotoUrl,data=datas,cookies=GetCookie)
 res5=s.get("https://tixcraft.com/ticket/check",cookies=GetCookie)
 print u"購買完成"
+tEnd=time.time()  #計時結束------------------------------------------------------------
+TotalTime=str(tEnd - tStart)
+print u"購票時間"+TotalTime,u"秒"
