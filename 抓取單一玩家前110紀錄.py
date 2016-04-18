@@ -1,12 +1,13 @@
 from bs4 import BeautifulSoup
 import requests
-GameNumCodeStr="https://lol.moa.tw/match/show/"
+GameNumCodeStr="https://lol.moa.tw/match/show/" 
 def url (ID):
     ID=str(ID)
     res2=requests.get("https://lol.moa.tw/summoner/show/"+ID) #使用者ID網址
     soup = BeautifulSoup(res2.text,"html.parser") 
     return soup
 def GameAllPlayer (GameNumCode):
+    ID_Array=[]
     GameNumCode=str(GameNumCode)
     res2=requests.get(GameNumCodeStr+GameNumCode) #進入詳細資料網址
     PlayerNum=0 #定位其餘十位玩家的位置
@@ -17,52 +18,82 @@ def GameAllPlayer (GameNumCode):
             PlayerID=str(ele) #剖析使用者ID
             PlayerID=PlayerID.split(">")[2]
             PlayerID=PlayerID.split("<")[0]
+            PlayerID=str(PlayerID)
             print PlayerID
+            #ID_Array=ID_Array.append(PlayerID)
+            #print ID_Array
         if PlayerNum==26:
             PlayerID=str(ele) #剖析使用者ID
             PlayerID=PlayerID.split(">")[2]
             PlayerID=PlayerID.split("<")[0]
+            PlayerID=str(PlayerID)
             print PlayerID
+            #ID_Array=ID_Array.append(PlayerID)
+            #print ID_Array
         if PlayerNum==30:
             PlayerID=str(ele) #剖析使用者ID
             PlayerID=PlayerID.split(">")[2]
             PlayerID=PlayerID.split("<")[0]
+            PlayerID=str(PlayerID)
             print PlayerID
+            #ID_Array=ID_Array.append(PlayerID)
+            #print ID_Array
         if PlayerNum==34:
             PlayerID=str(ele) #剖析使用者ID
             PlayerID=PlayerID.split(">")[2]
             PlayerID=PlayerID.split("<")[0]
+            PlayerID=str(PlayerID)
             print PlayerID
+            #ID_Array=ID_Array.append(PlayerID)
+            #print ID_Array
         if PlayerNum==38:
             PlayerID=str(ele) #剖析使用者ID
             PlayerID=PlayerID.split(">")[2]
             PlayerID=PlayerID.split("<")[0]
+            PlayerID=str(PlayerID)
             print PlayerID
+            #ID_Array=ID_Array.append(PlayerID)
+            #print ID_Array
         if PlayerNum==42:
             PlayerID=str(ele) #剖析使用者ID
             PlayerID=PlayerID.split(">")[2]
             PlayerID=PlayerID.split("<")[0]
+            PlayerID=str(PlayerID)
             print PlayerID
+            #ID_Array=ID_Array.append(PlayerID)
+            #print ID_Array
         if PlayerNum==46:
             PlayerID=str(ele) #剖析使用者ID
             PlayerID=PlayerID.split(">")[2]
             PlayerID=PlayerID.split("<")[0]
+            PlayerID=str(PlayerID)
             print PlayerID
+            #ID_Array=ID_Array.append(PlayerID)
+            #print ID_Array
         if PlayerNum==50:
             PlayerID=str(ele) #剖析使用者ID
             PlayerID=PlayerID.split(">")[2]
             PlayerID=PlayerID.split("<")[0]
+            PlayerID=str(PlayerID)
             print PlayerID
+            #ID_Array=ID_Array.append(PlayerID)
+            #print ID_Array
         if PlayerNum==54:
             PlayerID=str(ele) #剖析使用者ID
             PlayerID=PlayerID.split(">")[2]
             PlayerID=PlayerID.split("<")[0]
+            PlayerID=str(PlayerID)
             print PlayerID
+            #ID_Array=ID_Array.append(PlayerID)
+            #print ID_Array
         if PlayerNum==58:
             PlayerID=str(ele) #剖析使用者ID
             PlayerID=PlayerID.split(">")[2]
             PlayerID=PlayerID.split("<")[0]
+            PlayerID=str(PlayerID)
             print PlayerID
+            #ID_Array=ID_Array.append(PlayerID)
+            #print ID_Array
 def GameTotal(SearchNum,SearchUrl):
     res2=requests.get(SearchUrl)
     soup = BeautifulSoup(res2.text,"html.parser")
@@ -165,6 +196,6 @@ def SerchUrl(soup):
                 SearchUrl=urlStr+"/page:"+pagenum+"/sort:GameMatch.createDate/direction:desc"
                 SearchUrl=str(SearchUrl)
                 GameTotal(SearchNum,SearchUrl)  #SearchNum是搜尋次數，用來方便做出0~100的對戰紀錄，否則只會一直1~10重複10次
-                #print SearchUrl
+                
 soup=url("小孩子的把戲")
 SerchUrl(soup)
