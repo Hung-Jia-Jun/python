@@ -8,14 +8,13 @@ MySQlQuery=db.cursor() #建立一個供查詢的命令空間
 utfCode="""SET NAMES 'utf8'"""
 MySQlQuery.execute(utfCode)
 db.commit()
-
+ID_Array=[]
 def url (ID):
     ID=str(ID)
     res2=requests.get("https://lol.moa.tw/summoner/show/"+ID) #使用者ID網址
     soup = BeautifulSoup(res2.text,"html.parser")
     return soup
 def GameAllPlayer (GameNumCode):
-    ID_Array=[]
     GameNumCode=str(GameNumCode)
     res2=requests.get(GameNumCodeStr+GameNumCode) #進入詳細資料網址
     PlayerNum=0 #定位其餘十位玩家的位置
@@ -28,6 +27,7 @@ def GameAllPlayer (GameNumCode):
             PlayerID=PlayerID.split("<")[0]
             PlayerID=str(PlayerID)
             print PlayerID
+            ID_Array.append(PlayerID)
             if PlayerID is "":
                 print ""
 
@@ -43,6 +43,7 @@ def GameAllPlayer (GameNumCode):
             PlayerID=PlayerID.split("<")[0]
             PlayerID=str(PlayerID)
             print PlayerID
+            ID_Array.append(PlayerID)
             if PlayerID is "":
                 print ""
 
@@ -58,6 +59,7 @@ def GameAllPlayer (GameNumCode):
             PlayerID=PlayerID.split("<")[0]
             PlayerID=str(PlayerID)
             print PlayerID
+            ID_Array.append(PlayerID)
             if PlayerID is "":
                 print ""
 
@@ -73,6 +75,7 @@ def GameAllPlayer (GameNumCode):
             PlayerID=PlayerID.split("<")[0]
             PlayerID=str(PlayerID)
             print PlayerID
+            ID_Array.append(PlayerID)
             if PlayerID is "":
                 print ""
 
@@ -88,6 +91,7 @@ def GameAllPlayer (GameNumCode):
             PlayerID=PlayerID.split("<")[0]
             PlayerID=str(PlayerID)
             print PlayerID
+            ID_Array.append(PlayerID)
             if PlayerID is "":
                 print ""
 
@@ -103,6 +107,7 @@ def GameAllPlayer (GameNumCode):
             PlayerID=PlayerID.split("<")[0]
             PlayerID=str(PlayerID)
             print PlayerID
+            ID_Array.append(PlayerID)
             if PlayerID is "":
                 print ""
 
@@ -118,6 +123,7 @@ def GameAllPlayer (GameNumCode):
             PlayerID=PlayerID.split("<")[0]
             PlayerID=str(PlayerID)
             print PlayerID
+            ID_Array.append(PlayerID)
             if PlayerID is "":
                 print ""
 
@@ -132,6 +138,7 @@ def GameAllPlayer (GameNumCode):
             PlayerID=PlayerID.split("<")[0]
             PlayerID=str(PlayerID)
             print PlayerID
+            ID_Array.append(PlayerID)
             if PlayerID is "":
                 print ""
 
@@ -147,6 +154,7 @@ def GameAllPlayer (GameNumCode):
             PlayerID=PlayerID.split("<")[0]
             PlayerID=str(PlayerID)
             print PlayerID
+            ID_Array.append(PlayerID)
             if PlayerID is "":
                 print ""
 
@@ -162,6 +170,7 @@ def GameAllPlayer (GameNumCode):
             PlayerID=PlayerID.split("<")[0]
             PlayerID=str(PlayerID)
             print PlayerID
+            ID_Array.append(PlayerID)
             if PlayerID is "":
                 print ""
 
@@ -282,3 +291,14 @@ for row in MySQlQuery:
     print row
 soup=url("小孩子的把戲")
 SerchUrl(soup)
+while True:
+    startList=0
+    ID_Len=len(ID_Array)
+    ID_Len=int(ID_Len)
+    for i in range (startList,ID_Len):
+        ID_List=ID_Array[i]
+        ID_List=str(ID_List)
+        soup=url(ID_List)
+        SerchUrl(soup)
+        if i==ID_Len:
+            startList=i
