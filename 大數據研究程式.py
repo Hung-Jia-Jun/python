@@ -1,16 +1,24 @@
 #-*- coding: utf8 -*-
 from bs4 import BeautifulSoup
-import requests
+import requests,sys
 import MySQLdb,pdb
+import multiprocessing,thread
 db = MySQLdb.connect("127.0.0.1","root","admin","gamedata")
 cursor = db.cursor()
 utfCode="""SET NAMES 'utf8'"""
 cursor.execute(utfCode)
 GameNumCodeStr="https://lol.moa.tw/match/show/"
 ID_Array=[]
+insert_database=[] #資料庫指令陣列，每110場對戰資訊查詢後，將資料做一次性的儲存
 def url (ID):
     ID=str(ID)#使用者ID
-    res2=requests.get("https://lol.moa.tw/summoner/show/"+ID) #使用者ID網址
+    urlGet=False
+    while urlGet==False:
+        try:
+            res2=requests.get("https://lol.moa.tw/summoner/show/"+ID) #使用者ID網址
+            urlGet=True
+        except:
+            urlGet=False
     soup = BeautifulSoup(res2.text,"html.parser")
     return soup
 def GameEquip(soup,EquipNum):
@@ -232,16 +240,20 @@ def GameTotal(SearchNum,SearchUrl,ID_List):
             A=GameDetail_Array[13]
             KDANum=GameDetail_Array[14]
             sql="insert into lol_player_database(玩家ID,使用的英雄,裝備_1,裝備_2,裝備_3,裝備_4,裝備_5,裝備_6,遊戲結果,對戰地圖,對戰類型,擊殺,死亡,助攻,KDA值)values('"+ID_List+"','"+UserHero+"','"+Equip_1 +"','"+ Equip_2+"','"+Equip_3 +"','"+Equip_4 +"','"+ Equip_5+"','"+Equip_6 +"','"+This_Game_Result+"','"+PlayerMap+"','"+PlayClass +"','"+Kill +"','"+Death+"','"+A+"','"+KDANum+"');"
-            print sql
-            cursor.execute(sql)
-            db.commit()
+            #insert_database.append(sql)
+            #pdb.set_trace()
+            #pdb.set_trace()
+            #cursor.execute(sql)
+            #db.commit()
         except :
             pass
+    WriteLog = open('C:\\MySQLLog\\ThreadStatus.txt', 'w') #寫入目前進行中的狀態
     for i in range(1,11):
         GameNumber=SearchNum+i
         GameNumber=str(GameNumber)
         print GameNumber+"-------------------------------"
-        GameDetail(i,ID_List) #對所有對戰資訊做查詢##
+        GameDetail(i,ID_List) #對所有對戰資訊做查詢
+        WriteLog.write(i) #寫入目前進行到該玩家的第幾次查詢了 0～11
         print "-------------------------------"
 def SerchUrl(soup,ID_List):
     urlStr="https://lol.moa.tw/Ajax/recentgames/"
@@ -261,18 +273,238 @@ def SerchUrl(soup,ID_List):
                 SearchUrl=str(SearchUrl)
                 GameTotal(SearchNum,SearchUrl,ID_List)  #SearchNum是搜尋次數，用來方便做出0~100的對戰紀錄，否則只會一直1~10重複10次
 
-soup=url("我")
-SerchUrl(soup,"我")
-while True:
-    startList=0
-    ID_Len=len(ID_Array)
-    ID_Len=int(ID_Len)
-    for i in range (startList,ID_Len):
-        ID_List=ID_Array[i]
-        ID_List=str(ID_List)
-        soup=url(ID_List)
-        SerchUrl(soup,ID_List)
-        #pdb.set_trace()
-        if i==ID_Len: #如果迴圈數=陣列元素內的所有值
-            startList=i #就將目前運行中的迴圈數存進陣列起始值
-            print "startList:"+startList
+#多線程功能
+def RunThread():
+    WriteLog = open('C:\\MySQLLog\\Thread1.txt', 'w') #寫入Log記錄檔
+    WriteLog.write("小孩子的把戲")
+    soup=url("小孩子的把戲")
+    SerchUrl(soup,"小孩子的把戲")
+    while True:
+        startList=0
+        ID_Len=len(ID_Array)
+        ID_Len=int(ID_Len)
+        for i in range (startList,ID_Len):
+            ID_List=ID_Array[i]
+            ID_List=str(ID_List)
+            WriteLog = open('C:\\MySQLLog\\Thread1.txt', 'w') #寫入Log記錄檔
+            WriteLog.write(ID_List)
+            soup=url(ID_List)
+            SerchUrl(soup,ID_List)
+            #pdb.set_trace()
+            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
+                startList=i #就將目前運行中的迴圈數存進陣列起始值
+                print "startList:"+startList
+def RunThread():
+    soup=url("ProMini")
+    SerchUrl(soup,"ProMini")
+    WriteLog = open('C:\\MySQLLog\\Thread2.txt', 'w') #寫入Log記錄檔
+    WriteLog.write("ProMini")
+    while True:
+        startList=0
+        ID_Len=len(ID_Array)
+        ID_Len=int(ID_Len)
+        for i in range (startList,ID_Len):
+            ID_List=ID_Array[i]
+            ID_List=str(ID_List)
+            soup=url(ID_List)
+            SerchUrl(soup,ID_List)
+            WriteLog = open('C:\\MySQLLog\\Thread2.txt', 'w') #寫入Log記錄檔
+            WriteLog.write(ID_List)
+            #pdb.set_trace()
+            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
+                startList=i #就將目前運行中的迴圈數存進陣列起始值
+                print "startList:"+startList
+
+def RunThread():
+    WriteLog = open('C:\\MySQLLog\\Thread3.txt', 'w') #寫入Log記錄檔
+    WriteLog.write("發政仙風")
+    soup=url("發政仙風")
+    SerchUrl(soup,"發政仙風")
+    while True:
+        startList=0
+        ID_Len=len(ID_Array)
+        ID_Len=int(ID_Len)
+        for i in range (startList,ID_Len):
+            ID_List=ID_Array[i]
+            ID_List=str(ID_List)
+            WriteLog = open('C:\\MySQLLog\\Thread3.txt', 'w') #寫入Log記錄檔
+            WriteLog.write(ID_List)
+            soup=url(ID_List)
+            SerchUrl(soup,ID_List)
+            #pdb.set_trace()
+            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
+                startList=i #就將目前運行中的迴圈數存進陣列起始值
+                print "startList:"+startList
+
+def RunThread():
+    WriteLog = open('C:\\MySQLLog\\Thread4.txt', 'w') #寫入Log記錄檔
+    WriteLog.write("安平暖男求愛")
+    soup=url("安平暖男求愛")
+    SerchUrl(soup,"安平暖男求愛")
+    while True:
+        startList=0
+        ID_Len=len(ID_Array)
+        ID_Len=int(ID_Len)
+        for i in range (startList,ID_Len):
+            ID_List=ID_Array[i]
+            ID_List=str(ID_List)
+            WriteLog = open('C:\\MySQLLog\\Thread4.txt', 'w') #寫入Log記錄檔
+            WriteLog.write(ID_List)
+            soup=url(ID_List)
+            SerchUrl(soup,ID_List)
+            #pdb.set_trace()
+            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
+                startList=i #就將目前運行中的迴圈數存進陣列起始值
+                print "startList:"+startList
+
+def RunThread():
+    WriteLog = open('C:\\MySQLLog\\Thread5.txt', 'w') #寫入Log記錄檔
+    WriteLog.write("帥哥俠")
+    soup=url("帥哥俠")
+    SerchUrl(soup,"帥哥俠")
+    while True:
+        startList=0
+        ID_Len=len(ID_Array)
+        ID_Len=int(ID_Len)
+        for i in range (startList,ID_Len):
+            ID_List=ID_Array[i]
+            ID_List=str(ID_List)
+            WriteLog = open('C:\\MySQLLog\\Thread5.txt', 'w') #寫入Log記錄檔
+            WriteLog.write(ID_List)
+            soup=url(ID_List)
+            SerchUrl(soup,ID_List)
+            #pdb.set_trace()
+            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
+                startList=i #就將目前運行中的迴圈數存進陣列起始值
+                print "startList:"+startList
+
+def RunThread():
+    WriteLog = open('C:\\MySQLLog\\Thread6.txt', 'w') #寫入Log記錄檔
+    WriteLog.write("尼斯湖奶怪不戴套")
+    soup=url("尼斯湖奶怪不戴套")
+    SerchUrl(soup,"尼斯湖奶怪不戴套")
+    while True:
+        startList=0
+        ID_Len=len(ID_Array)
+        ID_Len=int(ID_Len)
+        for i in range (startList,ID_Len):
+            ID_List=ID_Array[i]
+            ID_List=str(ID_List)
+            WriteLog = open('C:\\MySQLLog\\Thread6.txt', 'w') #寫入Log記錄檔
+            WriteLog.write(ID_List)
+            soup=url(ID_List)
+            SerchUrl(soup,ID_List)
+            #pdb.set_trace()
+            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
+                startList=i #就將目前運行中的迴圈數存進陣列起始值
+                print "startList:"+startList
+
+def RunThread():
+    WriteLog = open('C:\\MySQLLog\\Thread7.txt', 'w') #寫入Log記錄檔
+    WriteLog.write("電機毒瘤洪紹恩")
+    soup=url("電機毒瘤洪紹恩")
+    SerchUrl(soup,"電機毒瘤洪紹恩")
+    while True:
+        startList=0
+        ID_Len=len(ID_Array)
+        ID_Len=int(ID_Len)
+        for i in range (startList,ID_Len):
+            ID_List=ID_Array[i]
+            ID_List=str(ID_List)
+            WriteLog = open('C:\\MySQLLog\\Thread7.txt', 'w') #寫入Log記錄檔
+            WriteLog.write(ID_List)
+            soup=url(ID_List)
+            SerchUrl(soup,ID_List)
+            #pdb.set_trace()
+            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
+                startList=i #就將目前運行中的迴圈數存進陣列起始值
+                print "startList:"+startList
+
+def RunThread():
+    WriteLog = open('C:\\MySQLLog\\Thread8.txt', 'w') #寫入Log記錄檔
+    WriteLog.write("員林最狂陳浩南")
+    soup=url("員林最狂陳浩南")
+    SerchUrl(soup,"員林最狂陳浩南")
+    while True:
+        startList=0
+        ID_Len=len(ID_Array)
+        ID_Len=int(ID_Len)
+        for i in range (startList,ID_Len):
+            ID_List=ID_Array[i]
+            ID_List=str(ID_List)
+            WriteLog = open('C:\\MySQLLog\\Thread8.txt', 'w') #寫入Log記錄檔
+            WriteLog.write(ID_List)
+            soup=url(ID_List)
+            SerchUrl(soup,ID_List)
+            #pdb.set_trace()
+            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
+                startList=i #就將目前運行中的迴圈數存進陣列起始值
+                print "startList:"+startList
+
+def RunThread():
+    WriteLog = open('C:\\MySQLLog\\Thread9.txt', 'w') #寫入Log記錄檔
+    WriteLog.write("BestAzirEU")
+    soup=url("BestAzirEU")
+    SerchUrl(soup,"BestAzirEU")
+    while True:
+        startList=0
+        ID_Len=len(ID_Array)
+        ID_Len=int(ID_Len)
+        for i in range (startList,ID_Len):
+            ID_List=ID_Array[i]
+            ID_List=str(ID_List)
+            WriteLog = open('C:\\MySQLLog\\Thread9.txt', 'w') #寫入Log記錄檔
+            WriteLog.write(ID_List)
+            soup=url(ID_List)
+            SerchUrl(soup,ID_List)
+            #pdb.set_trace()
+            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
+                startList=i #就將目前運行中的迴圈數存進陣列起始值
+                print "startList:"+startList
+
+#def RunThread():
+    #soup=url("寶寶要戳但寶寶不說òüó")
+    #SerchUrl(soup,"寶寶要戳但寶寶不說òüó")
+    #WriteLog = open('C:\\MySQLLog\\Thread10.txt', 'w') #寫入Log記錄檔
+    #WriteLog.write("寶寶要戳但寶寶不說òüó")
+    #while True:
+        #startList=0
+        #ID_Len=len(ID_Array)
+        #ID_Len=int(ID_Len)
+        #for i in range (startList,ID_Len):
+            #ID_List=ID_Array[i]
+            #ID_List=str(ID_List)
+            #WriteLog = open('C:\\MySQLLog\\Thread10.txt', 'w') #寫入Log記錄檔
+            #WriteLog.write(ID_List)
+            #soup=url(ID_List)
+            #SerchUrl(soup,ID_List)
+            #pdb.set_trace()
+            #if i==ID_Len: #如果迴圈數=陣列元素內的所有值
+                #startList=i #就將目前運行中的迴圈數存進陣列起始值
+                #print "startList:"+startList
+
+if __name__ == '__main__':
+    p1 = multiprocessing.Process(target=RunThread,)
+    p2 = multiprocessing.Process(target=RunThread,)
+    p3 = multiprocessing.Process(target=RunThread,)
+    p4 = multiprocessing.Process(target=RunThread,)
+    p5 = multiprocessing.Process(target=RunThread,)
+
+    p6 = multiprocessing.Process(target=RunThread,)
+    p7 = multiprocessing.Process(target=RunThread,)
+    p8 = multiprocessing.Process(target=RunThread,)
+    p9 = multiprocessing.Process(target=RunThread,)
+    p10 = multiprocessing.Process(target=RunThread,)
+
+    p1.start()
+    #p2.start()
+    #p3.start()
+    #p4.start()
+    #p5.start()
+
+
+    #p6.start()
+    #p7.start()
+    #p8.start()
+    #p9.start()
+    #p10.start()
