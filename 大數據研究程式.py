@@ -1,14 +1,19 @@
 #-*- coding: utf8 -*-
+import socks,socket,Queue
 from bs4 import BeautifulSoup
-import requests,sys
-import MySQLdb,pdb
+import requests,sys,time
+import MySQLdb,pdb,random
 import multiprocessing,thread
+from tqdm import tqdm
+socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS4, '127.0.0.1', 9150, True)
+socket.socket = socks.socksocket
 db = MySQLdb.connect("127.0.0.1","root","admin","gamedata")
 cursor = db.cursor()
 utfCode="""SET NAMES 'utf8'"""
 cursor.execute(utfCode)
 GameNumCodeStr="https://lol.moa.tw/match/show/"
-ID_Array=[]
+ID_Array = []
+ID_Queue=Queue.Queue()
 insert_database=[] #資料庫指令陣列，每110場對戰資訊查詢後，將資料做一次性的儲存
 def url (ID):
     ID=str(ID)#使用者ID
@@ -18,6 +23,7 @@ def url (ID):
             res2=requests.get("https://lol.moa.tw/summoner/show/"+ID) #使用者ID網址
             urlGet=True
         except:
+            print "Recaptcha Error!!"
             urlGet=False
     soup = BeautifulSoup(res2.text,"html.parser")
     return soup
@@ -27,7 +33,7 @@ def GameEquip(soup,EquipNum):
         eleNum=eleNum+1
         #EquipNum就是我們要查詢那位玩家的前10場對戰的裝備列
         if eleNum==EquipNum:
-            print "--------------------------------------------"
+            ##print "--------------------------------------------"
             ele=str(ele)
             ele1=ele.split('''data-code="''')[1]
             Equip_ele1=ele1.split('''"''')[0]
@@ -56,14 +62,14 @@ def GameAllPlayer (GameNumCode): #查詢所有玩家的ID  存進陣列裡面
                 PlayerID=PlayerID.split("/")[3]
                 PlayerID=PlayerID.split('''"''')[0]
                 ID_Array.append(PlayerID) #增加進查詢玩家陣列
-            #pdb.set_trace()
+                ID_Queue.put(PlayerID)
+
 def GameTotal(SearchNum,SearchUrl,ID_List):
     res2=requests.get(SearchUrl)
     soup = BeautifulSoup(res2.text,"html.parser")
     SearchNum=(SearchNum-1)*10
-
-    GameResult_Num=0 #遊戲結果為1.3.5.7.9.11
     def GameDetail(GameNum,ID_List):
+        GameResult_Num=0 #遊戲結果為1.3.5.7.9.11
         GameDetail_Array=[] #該場對戰資訊陣列
         if GameNum==1:
             GameResult_Num=1
@@ -98,40 +104,34 @@ def GameTotal(SearchNum,SearchUrl,ID_List):
                     ele=str(ele)
                     ele=ele.split('>')[1]
                     Game_Num_Code_ele=ele.split('<')[0]
-                    print "對戰代號:"+Game_Num_Code_ele
+                    ##print "對戰代號:"+Game_Num_Code_ele
                     Game_Num_Code_ele=str(Game_Num_Code_ele)
                     GameAllPlayer(Game_Num_Code_ele) #將對戰代號推入查詢所有玩家頁面
                     GameDetail_Array.append(Game_Num_Code_ele) #將對戰代號推入陣列中
 
             for ele in soup.select('tr'):
                 recentKDAnum=recentKDAnum+1
-
                 if recentKDAnum==GameResult_Num:
                     ele=str(ele)
                     GameResult=ele.split(">")[5]
-                    print "遊戲結果:"+GameResult.split("<")[0]
+                    ##print "遊戲結果:"+GameResult.split("<")[0]
                     GameResult=GameResult.split("<")[0]
                     GameResult=str(GameResult)
                     GameDetail_Array.append(GameResult)#將遊戲結果推入陣列中
 
                     GameMap=ele.split(">")[7]
-                    print "對戰地圖:"+GameMap.split("<")[0]
+                    ##print "對戰地圖:"+GameMap.split("<")[0]
                     GameMap=GameMap.split("<")[0]
                     GameMap=str(GameMap)
                     GameDetail_Array.append(GameMap)#將對戰地圖推入陣列中
 
                     GameStatus=ele.split(">")[9]
                     GameStatus=GameStatus.split("<")[0]
-                    print "對戰類型:"+GameStatus
+                    ##print "對戰類型:"+GameStatus
                     GameDetail_Array.append(GameStatus)#將對戰類型推入陣列中
                     GameStatus=GameStatus.split("<")[0]
                     GameStatus=str(GameStatus)
 
-                    #GameTime=ele.split(">")[13]
-                    #print "遊戲長度:"+GameTime.split("<")[0]
-                    #GameTime=GameTime.split("<")[0]
-                    #GameTime=str(GameTime)
-                    #GameDetail_Array.append(GameTime)#將遊戲長度推入陣列中
 
         else:
             for ele in soup.select('span'):
@@ -140,9 +140,10 @@ def GameTotal(SearchNum,SearchUrl,ID_List):
                     ele=str(ele)
                     ele=ele.split('>')[1]
                     Game_Num_Code_ele=ele.split('<')[0]
-                    print "對戰代號:"+Game_Num_Code_ele
+                    ##print "對戰代號:"+Game_Num_Code_ele
                     Game_Num_Code_ele=str(Game_Num_Code_ele)
                     GameAllPlayer(Game_Num_Code_ele) #將對戰代號推入查詢所有玩家頁面
+
                     GameDetail_Array.append(Game_Num_Code_ele) #將對戰代號推入陣列中
 
             for ele in soup.select('tr'):
@@ -150,27 +151,23 @@ def GameTotal(SearchNum,SearchUrl,ID_List):
                 if recentKDAnum==GameResult_Num:
                     ele=str(ele)
                     GameResult=ele.split(">")[5]
-                    print "遊戲結果:"+GameResult.split("<")[0]
+                    ##print "遊戲結果:"+GameResult.split("<")[0]
                     GameResult=GameResult.split("<")[0]
                     GameResult=str(GameResult)
                     GameDetail_Array.append(GameResult)#將遊戲結果推入陣列中
 
                     GameMap=ele.split(">")[7]
-                    print "對戰地圖:"+GameMap.split("<")[0]
+                    ##print "對戰地圖:"+GameMap.split("<")[0]
                     GameMap=GameMap.split("<")[0]
                     GameMap=str(GameMap)
                     GameDetail_Array.append(GameMap)#將對戰地圖推入陣列中
 
                     GameStatus=ele.split(">")[9]
                     GameStatus=GameStatus.split("<")[0]
-                    print "對戰類型:"+GameStatus
+                    ##print "對戰類型:"+GameStatus
                     GameDetail_Array.append(GameStatus)#將對戰類型推入陣列中
 
-                    ##GameTime=ele.split(">")[13]
-                    ##print "遊戲長度:"+GameTime.split("<")[0]
-                    ##GameTime=GameTime.split("<")[0]
-                    ##GameTime=str(GameTime)
-                    ##GameDetail_Array.append(GameTime)#將遊戲長度推入陣列中
+
         GameEquip_Content=GameEquip(soup,((GameNum-1)*10+4))
         #4=查詢第一場角色裝備
         #14=查詢第二場角色裝備
@@ -198,32 +195,30 @@ def GameTotal(SearchNum,SearchUrl,ID_List):
             if LegendNum==((GameNum-1)*10)+1:
                 ele=str(ele)
                 LegendName=ele.split('''"''')[5]
-                print "使用的英雄:"+LegendName
+                ##print "使用的英雄:"+LegendName
                 GameDetail_Array.append(LegendName)
 
             if recentnum==((GameNum-1)*10)+2:
                 ele=str(ele)
-                print "擊殺:"+ele.split('''"''')[7]
+                ##print "擊殺:"+ele.split('''"''')[7]
                 Kill=ele.split('''"''')[7] #擊殺
                 GameDetail_Array.append(Kill)
 
-                print "死亡:"+ele.split('''"''')[11]
+                ##print "死亡:"+ele.split('''"''')[11]
                 Death=ele.split('''"''')[11] #死亡
                 GameDetail_Array.append(Death)
 
-                print "助攻:"+ele.split('''"''')[15]
+                ##print "助攻:"+ele.split('''"''')[15]
                 A=ele.split('''"''')[15] #助攻
                 GameDetail_Array.append(A)
 
                 KDAScroe=ele.split('''(''')[1]
                 KDAScroe=KDAScroe.split(''')''')[0]
-                print "KDA值:"+KDAScroe
                 GameDetail_Array.append(KDAScroe)
 
         GameDetail_Len=len(GameDetail_Array)
         GameDetail_Len=int(GameDetail_Len)
-        for i in range(0,GameDetail_Len):
-            print GameDetail_Array[i]
+
         try:
             This_Game_Result=GameDetail_Array[1]
             PlayerMap=GameDetail_Array[2]
@@ -239,22 +234,20 @@ def GameTotal(SearchNum,SearchUrl,ID_List):
             Death=GameDetail_Array[12]
             A=GameDetail_Array[13]
             KDANum=GameDetail_Array[14]
-            sql="insert into lol_player_database(玩家ID,使用的英雄,裝備_1,裝備_2,裝備_3,裝備_4,裝備_5,裝備_6,遊戲結果,對戰地圖,對戰類型,擊殺,死亡,助攻,KDA值)values('"+ID_List+"','"+UserHero+"','"+Equip_1 +"','"+ Equip_2+"','"+Equip_3 +"','"+Equip_4 +"','"+ Equip_5+"','"+Equip_6 +"','"+This_Game_Result+"','"+PlayerMap+"','"+PlayClass +"','"+Kill +"','"+Death+"','"+A+"','"+KDANum+"');"
-            #insert_database.append(sql)
+            sql="insert into LOL_Player_Data(玩家ID,使用的英雄,裝備_1,裝備_2,裝備_3,裝備_4,裝備_5,裝備_6,遊戲結果,對戰地圖,對戰類型,擊殺,死亡,助攻,KDA值)values('"+ID_List+"','"+UserHero+"','"+Equip_1 +"','"+ Equip_2+"','"+Equip_3 +"','"+Equip_4 +"','"+ Equip_5+"','"+Equip_6 +"','"+This_Game_Result+"','"+PlayerMap+"','"+PlayClass +"','"+Kill +"','"+Death+"','"+A+"','"+KDANum+"');"
+            insert_database.append(sql)
+
+
             #pdb.set_trace()
-            #pdb.set_trace()
-            #cursor.execute(sql)
-            #db.commit()
+            cursor.execute(sql)
+            db.commit()
         except :
             pass
-    WriteLog = open('C:\\MySQLLog\\ThreadStatus.txt', 'w') #寫入目前進行中的狀態
-    for i in range(1,11):
+    for i in tqdm(range(1,11)): #這裡去處理一個玩家的所有遊戲記錄
         GameNumber=SearchNum+i
         GameNumber=str(GameNumber)
-        print GameNumber+"-------------------------------"
         GameDetail(i,ID_List) #對所有對戰資訊做查詢
-        WriteLog.write(i) #寫入目前進行到該玩家的第幾次查詢了 0～11
-        print "-------------------------------"
+
 def SerchUrl(soup,ID_List):
     urlStr="https://lol.moa.tw/Ajax/recentgames/"
     urlnum=0 #要剖析的定位行數，利用他到達指定行數後即停止，即可剖析查詢網址
@@ -266,19 +259,21 @@ def SerchUrl(soup,ID_List):
             ele=str(ele) #轉成文字類型
             eleUrl=ele.split("=")[2]
             urlStr=urlStr+eleUrl[17:25]
-            for pagenum in range(0,11):
-                pagenum=str(pagenum)
-                SearchNum=SearchNum+1
-                SearchUrl=urlStr+"/page:"+pagenum+"/sort:GameMatch.createDate/direction:desc"
-                SearchUrl=str(SearchUrl)
-                GameTotal(SearchNum,SearchUrl,ID_List)  #SearchNum是搜尋次數，用來方便做出0~100的對戰紀錄，否則只會一直1~10重複10次
+    for pagenum in range(11):
+        pagenum=str(pagenum)
+        SearchNum=SearchNum+1
+        SearchUrl=urlStr+"/page:"+pagenum+"/sort:GameMatch.createDate/direction:desc"
+        SearchUrl=str(SearchUrl)
+        GameTotal(SearchNum,SearchUrl,ID_List)
+        #SearchNum是搜尋次數，用來方便做出0~100的對戰紀錄，否則只會一直1~10重複10次
 
 #多線程功能
+
 def RunThread():
-    WriteLog = open('C:\\MySQLLog\\Thread1.txt', 'w') #寫入Log記錄檔
-    WriteLog.write("小孩子的把戲")
     soup=url("小孩子的把戲")
     SerchUrl(soup,"小孩子的把戲")
+    #pdb.set_trace()
+    ID_Len=len(ID_Array)
     while True:
         startList=0
         ID_Len=len(ID_Array)
@@ -286,49 +281,6 @@ def RunThread():
         for i in range (startList,ID_Len):
             ID_List=ID_Array[i]
             ID_List=str(ID_List)
-            WriteLog = open('C:\\MySQLLog\\Thread1.txt', 'w') #寫入Log記錄檔
-            WriteLog.write(ID_List)
-            soup=url(ID_List)
-            SerchUrl(soup,ID_List)
-            #pdb.set_trace()
-            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
-                startList=i #就將目前運行中的迴圈數存進陣列起始值
-                print "startList:"+startList
-def RunThread():
-    soup=url("ProMini")
-    SerchUrl(soup,"ProMini")
-    WriteLog = open('C:\\MySQLLog\\Thread2.txt', 'w') #寫入Log記錄檔
-    WriteLog.write("ProMini")
-    while True:
-        startList=0
-        ID_Len=len(ID_Array)
-        ID_Len=int(ID_Len)
-        for i in range (startList,ID_Len):
-            ID_List=ID_Array[i]
-            ID_List=str(ID_List)
-            soup=url(ID_List)
-            SerchUrl(soup,ID_List)
-            WriteLog = open('C:\\MySQLLog\\Thread2.txt', 'w') #寫入Log記錄檔
-            WriteLog.write(ID_List)
-            #pdb.set_trace()
-            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
-                startList=i #就將目前運行中的迴圈數存進陣列起始值
-                print "startList:"+startList
-
-def RunThread():
-    WriteLog = open('C:\\MySQLLog\\Thread3.txt', 'w') #寫入Log記錄檔
-    WriteLog.write("發政仙風")
-    soup=url("發政仙風")
-    SerchUrl(soup,"發政仙風")
-    while True:
-        startList=0
-        ID_Len=len(ID_Array)
-        ID_Len=int(ID_Len)
-        for i in range (startList,ID_Len):
-            ID_List=ID_Array[i]
-            ID_List=str(ID_List)
-            WriteLog = open('C:\\MySQLLog\\Thread3.txt', 'w') #寫入Log記錄檔
-            WriteLog.write(ID_List)
             soup=url(ID_List)
             SerchUrl(soup,ID_List)
             #pdb.set_trace()
@@ -336,169 +288,33 @@ def RunThread():
                 startList=i #就將目前運行中的迴圈數存進陣列起始值
                 print "startList:"+startList
 
-def RunThread():
-    WriteLog = open('C:\\MySQLLog\\Thread4.txt', 'w') #寫入Log記錄檔
-    WriteLog.write("安平暖男求愛")
-    soup=url("安平暖男求愛")
-    SerchUrl(soup,"安平暖男求愛")
+def MultiThread():
+    global ID_Queue
     while True:
-        startList=0
-        ID_Len=len(ID_Array)
-        ID_Len=int(ID_Len)
-        for i in range (startList,ID_Len):
-            ID_List=ID_Array[i]
+        if not ID_Queue.empty():
+            ID_Queue.get()
+            ID_List=ID_Queue.get()
             ID_List=str(ID_List)
-            WriteLog = open('C:\\MySQLLog\\Thread4.txt', 'w') #寫入Log記錄檔
-            WriteLog.write(ID_List)
             soup=url(ID_List)
             SerchUrl(soup,ID_List)
             #pdb.set_trace()
-            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
-                startList=i #就將目前運行中的迴圈數存進陣列起始值
-                print "startList:"+startList
-
-def RunThread():
-    WriteLog = open('C:\\MySQLLog\\Thread5.txt', 'w') #寫入Log記錄檔
-    WriteLog.write("帥哥俠")
-    soup=url("帥哥俠")
-    SerchUrl(soup,"帥哥俠")
-    while True:
-        startList=0
-        ID_Len=len(ID_Array)
-        ID_Len=int(ID_Len)
-        for i in range (startList,ID_Len):
-            ID_List=ID_Array[i]
-            ID_List=str(ID_List)
-            WriteLog = open('C:\\MySQLLog\\Thread5.txt', 'w') #寫入Log記錄檔
-            WriteLog.write(ID_List)
-            soup=url(ID_List)
-            SerchUrl(soup,ID_List)
-            #pdb.set_trace()
-            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
-                startList=i #就將目前運行中的迴圈數存進陣列起始值
-                print "startList:"+startList
-
-def RunThread():
-    WriteLog = open('C:\\MySQLLog\\Thread6.txt', 'w') #寫入Log記錄檔
-    WriteLog.write("尼斯湖奶怪不戴套")
-    soup=url("尼斯湖奶怪不戴套")
-    SerchUrl(soup,"尼斯湖奶怪不戴套")
-    while True:
-        startList=0
-        ID_Len=len(ID_Array)
-        ID_Len=int(ID_Len)
-        for i in range (startList,ID_Len):
-            ID_List=ID_Array[i]
-            ID_List=str(ID_List)
-            WriteLog = open('C:\\MySQLLog\\Thread6.txt', 'w') #寫入Log記錄檔
-            WriteLog.write(ID_List)
-            soup=url(ID_List)
-            SerchUrl(soup,ID_List)
-            #pdb.set_trace()
-            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
-                startList=i #就將目前運行中的迴圈數存進陣列起始值
-                print "startList:"+startList
-
-def RunThread():
-    WriteLog = open('C:\\MySQLLog\\Thread7.txt', 'w') #寫入Log記錄檔
-    WriteLog.write("電機毒瘤洪紹恩")
-    soup=url("電機毒瘤洪紹恩")
-    SerchUrl(soup,"電機毒瘤洪紹恩")
-    while True:
-        startList=0
-        ID_Len=len(ID_Array)
-        ID_Len=int(ID_Len)
-        for i in range (startList,ID_Len):
-            ID_List=ID_Array[i]
-            ID_List=str(ID_List)
-            WriteLog = open('C:\\MySQLLog\\Thread7.txt', 'w') #寫入Log記錄檔
-            WriteLog.write(ID_List)
-            soup=url(ID_List)
-            SerchUrl(soup,ID_List)
-            #pdb.set_trace()
-            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
-                startList=i #就將目前運行中的迴圈數存進陣列起始值
-                print "startList:"+startList
-
-def RunThread():
-    WriteLog = open('C:\\MySQLLog\\Thread8.txt', 'w') #寫入Log記錄檔
-    WriteLog.write("員林最狂陳浩南")
-    soup=url("員林最狂陳浩南")
-    SerchUrl(soup,"員林最狂陳浩南")
-    while True:
-        startList=0
-        ID_Len=len(ID_Array)
-        ID_Len=int(ID_Len)
-        for i in range (startList,ID_Len):
-            ID_List=ID_Array[i]
-            ID_List=str(ID_List)
-            WriteLog = open('C:\\MySQLLog\\Thread8.txt', 'w') #寫入Log記錄檔
-            WriteLog.write(ID_List)
-            soup=url(ID_List)
-            SerchUrl(soup,ID_List)
-            #pdb.set_trace()
-            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
-                startList=i #就將目前運行中的迴圈數存進陣列起始值
-                print "startList:"+startList
-
-def RunThread():
-    WriteLog = open('C:\\MySQLLog\\Thread9.txt', 'w') #寫入Log記錄檔
-    WriteLog.write("BestAzirEU")
-    soup=url("BestAzirEU")
-    SerchUrl(soup,"BestAzirEU")
-    while True:
-        startList=0
-        ID_Len=len(ID_Array)
-        ID_Len=int(ID_Len)
-        for i in range (startList,ID_Len):
-            ID_List=ID_Array[i]
-            ID_List=str(ID_List)
-            WriteLog = open('C:\\MySQLLog\\Thread9.txt', 'w') #寫入Log記錄檔
-            WriteLog.write(ID_List)
-            soup=url(ID_List)
-            SerchUrl(soup,ID_List)
-            #pdb.set_trace()
-            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
-                startList=i #就將目前運行中的迴圈數存進陣列起始值
-                print "startList:"+startList
-
-#def RunThread():
-    #soup=url("寶寶要戳但寶寶不說òüó")
-    #SerchUrl(soup,"寶寶要戳但寶寶不說òüó")
-    #WriteLog = open('C:\\MySQLLog\\Thread10.txt', 'w') #寫入Log記錄檔
-    #WriteLog.write("寶寶要戳但寶寶不說òüó")
-    #while True:
-        #startList=0
-        #ID_Len=len(ID_Array)
-        #ID_Len=int(ID_Len)
-        #for i in range (startList,ID_Len):
-            #ID_List=ID_Array[i]
-            #ID_List=str(ID_List)
-            #WriteLog = open('C:\\MySQLLog\\Thread10.txt', 'w') #寫入Log記錄檔
-            #WriteLog.write(ID_List)
-            #soup=url(ID_List)
-            #SerchUrl(soup,ID_List)
-            #pdb.set_trace()
-            #if i==ID_Len: #如果迴圈數=陣列元素內的所有值
-                #startList=i #就將目前運行中的迴圈數存進陣列起始值
-                #print "startList:"+startList
 
 if __name__ == '__main__':
     p1 = multiprocessing.Process(target=RunThread,)
-    p2 = multiprocessing.Process(target=RunThread,)
-    p3 = multiprocessing.Process(target=RunThread,)
-    p4 = multiprocessing.Process(target=RunThread,)
-    p5 = multiprocessing.Process(target=RunThread,)
+    p2 = multiprocessing.Process(target=MultiThread,)
+    p3 = multiprocessing.Process(target=MultiThread,)
+    p4 = multiprocessing.Process(target=MultiThread,)
+    p5 = multiprocessing.Process(target=MultiThread,)
 
-    p6 = multiprocessing.Process(target=RunThread,)
-    p7 = multiprocessing.Process(target=RunThread,)
-    p8 = multiprocessing.Process(target=RunThread,)
-    p9 = multiprocessing.Process(target=RunThread,)
-    p10 = multiprocessing.Process(target=RunThread,)
+    p6 = multiprocessing.Process(target=MultiThread,)
+    p7 = multiprocessing.Process(target=MultiThread,)
+    p8 = multiprocessing.Process(target=MultiThread,)
+    p9 = multiprocessing.Process(target=MultiThread,)
+    p10 = multiprocessing.Process(target=MultiThread,)
 
     p1.start()
-    #p2.start()
-    #p3.start()
+    p2.start()
+    p3.start()
     #p4.start()
     #p5.start()
 
