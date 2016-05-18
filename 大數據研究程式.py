@@ -5,8 +5,7 @@ import requests,sys,time
 import MySQLdb,pdb,random
 import multiprocessing,thread
 from tqdm import tqdm
-socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS4, '127.0.0.1', 9150, True)
-socket.socket = socks.socksocket
+
 db = MySQLdb.connect("127.0.0.1","root","admin","gamedata")
 cursor = db.cursor()
 utfCode="""SET NAMES 'utf8'"""
@@ -18,12 +17,15 @@ insert_database=[] #資料庫指令陣列，每110場對戰資訊查詢後，將
 def url (ID):
     ID=str(ID)#使用者ID
     urlGet=False
+    Error_Num=0
     while urlGet==False:
         try:
             res2=requests.get("https://lol.moa.tw/summoner/show/"+ID) #使用者ID網址
             urlGet=True
         except:
-            print "Recaptcha Error!!"
+            socks.setdefaultproxy(socks.SOCKS5, '127.0.0.1', 9150, True)
+            socket.socket = socks.socksocket
+            Error_Num=Error_Num+1
             urlGet=False
     soup = BeautifulSoup(res2.text,"html.parser")
     return soup
@@ -33,7 +35,7 @@ def GameEquip(soup,EquipNum):
         eleNum=eleNum+1
         #EquipNum就是我們要查詢那位玩家的前10場對戰的裝備列
         if eleNum==EquipNum:
-            ##print "--------------------------------------------"
+            print "--------------------------------------------"
             ele=str(ele)
             ele1=ele.split('''data-code="''')[1]
             Equip_ele1=ele1.split('''"''')[0]
@@ -51,7 +53,17 @@ def GameEquip(soup,EquipNum):
 
 def GameAllPlayer (GameNumCode): #查詢所有玩家的ID  存進陣列裡面
     GameNumCode=str(GameNumCode)
-    res2=requests.get(GameNumCodeStr+GameNumCode) #進入詳細資料網址
+    urlGet=False
+    Error_Num=0
+    while urlGet==False:
+        try:
+            socks.setdefaultproxy(socks.SOCKS5, '127.0.0.1', 9150, True)
+            socket.socket = socks.socksocket
+            res2=requests.get(GameNumCodeStr+GameNumCode) #進入詳細資料網址
+            urlGet=True
+        except:
+            Error_Num=Error_Num+1
+            urlGet=False
     PlayerNum=0 #定位其餘十位玩家的位置
     soup = BeautifulSoup(res2.text,"html.parser")
     for ele in soup.select('a'):
@@ -65,7 +77,17 @@ def GameAllPlayer (GameNumCode): #查詢所有玩家的ID  存進陣列裡面
                 ID_Queue.put(PlayerID)
 
 def GameTotal(SearchNum,SearchUrl,ID_List):
-    res2=requests.get(SearchUrl)
+    urlGet=False
+    Error_Num=0
+    while urlGet==False:
+        try:
+            socks.setdefaultproxy(socks.SOCKS5, '127.0.0.1', 9150, True)
+            socket.socket = socks.socksocket
+            res2=requests.get(SearchUrl)
+            urlGet=True
+        except:
+            Error_Num=Error_Num+1
+            urlGet=False
     soup = BeautifulSoup(res2.text,"html.parser")
     SearchNum=(SearchNum-1)*10
     def GameDetail(GameNum,ID_List):
@@ -104,7 +126,7 @@ def GameTotal(SearchNum,SearchUrl,ID_List):
                     ele=str(ele)
                     ele=ele.split('>')[1]
                     Game_Num_Code_ele=ele.split('<')[0]
-                    ##print "對戰代號:"+Game_Num_Code_ele
+                    print "對戰代號:"+Game_Num_Code_ele
                     Game_Num_Code_ele=str(Game_Num_Code_ele)
                     GameAllPlayer(Game_Num_Code_ele) #將對戰代號推入查詢所有玩家頁面
                     GameDetail_Array.append(Game_Num_Code_ele) #將對戰代號推入陣列中
@@ -114,20 +136,20 @@ def GameTotal(SearchNum,SearchUrl,ID_List):
                 if recentKDAnum==GameResult_Num:
                     ele=str(ele)
                     GameResult=ele.split(">")[5]
-                    ##print "遊戲結果:"+GameResult.split("<")[0]
+                    print "遊戲結果:"+GameResult.split("<")[0]
                     GameResult=GameResult.split("<")[0]
                     GameResult=str(GameResult)
                     GameDetail_Array.append(GameResult)#將遊戲結果推入陣列中
 
                     GameMap=ele.split(">")[7]
-                    ##print "對戰地圖:"+GameMap.split("<")[0]
+                    print "對戰地圖:"+GameMap.split("<")[0]
                     GameMap=GameMap.split("<")[0]
                     GameMap=str(GameMap)
                     GameDetail_Array.append(GameMap)#將對戰地圖推入陣列中
 
                     GameStatus=ele.split(">")[9]
                     GameStatus=GameStatus.split("<")[0]
-                    ##print "對戰類型:"+GameStatus
+                    print "對戰類型:"+GameStatus
                     GameDetail_Array.append(GameStatus)#將對戰類型推入陣列中
                     GameStatus=GameStatus.split("<")[0]
                     GameStatus=str(GameStatus)
@@ -140,7 +162,7 @@ def GameTotal(SearchNum,SearchUrl,ID_List):
                     ele=str(ele)
                     ele=ele.split('>')[1]
                     Game_Num_Code_ele=ele.split('<')[0]
-                    ##print "對戰代號:"+Game_Num_Code_ele
+                    print "對戰代號:"+Game_Num_Code_ele
                     Game_Num_Code_ele=str(Game_Num_Code_ele)
                     GameAllPlayer(Game_Num_Code_ele) #將對戰代號推入查詢所有玩家頁面
 
@@ -151,20 +173,20 @@ def GameTotal(SearchNum,SearchUrl,ID_List):
                 if recentKDAnum==GameResult_Num:
                     ele=str(ele)
                     GameResult=ele.split(">")[5]
-                    ##print "遊戲結果:"+GameResult.split("<")[0]
+                    print "遊戲結果:"+GameResult.split("<")[0]
                     GameResult=GameResult.split("<")[0]
                     GameResult=str(GameResult)
                     GameDetail_Array.append(GameResult)#將遊戲結果推入陣列中
 
                     GameMap=ele.split(">")[7]
-                    ##print "對戰地圖:"+GameMap.split("<")[0]
+                    print "對戰地圖:"+GameMap.split("<")[0]
                     GameMap=GameMap.split("<")[0]
                     GameMap=str(GameMap)
                     GameDetail_Array.append(GameMap)#將對戰地圖推入陣列中
 
                     GameStatus=ele.split(">")[9]
                     GameStatus=GameStatus.split("<")[0]
-                    ##print "對戰類型:"+GameStatus
+                    print "對戰類型:"+GameStatus
                     GameDetail_Array.append(GameStatus)#將對戰類型推入陣列中
 
 
@@ -195,20 +217,20 @@ def GameTotal(SearchNum,SearchUrl,ID_List):
             if LegendNum==((GameNum-1)*10)+1:
                 ele=str(ele)
                 LegendName=ele.split('''"''')[5]
-                ##print "使用的英雄:"+LegendName
+                print "使用的英雄:"+LegendName
                 GameDetail_Array.append(LegendName)
 
             if recentnum==((GameNum-1)*10)+2:
                 ele=str(ele)
-                ##print "擊殺:"+ele.split('''"''')[7]
+                print "擊殺:"+ele.split('''"''')[7]
                 Kill=ele.split('''"''')[7] #擊殺
                 GameDetail_Array.append(Kill)
 
-                ##print "死亡:"+ele.split('''"''')[11]
+                print "死亡:"+ele.split('''"''')[11]
                 Death=ele.split('''"''')[11] #死亡
                 GameDetail_Array.append(Death)
 
-                ##print "助攻:"+ele.split('''"''')[15]
+                print "助攻:"+ele.split('''"''')[15]
                 A=ele.split('''"''')[15] #助攻
                 GameDetail_Array.append(A)
 
@@ -243,7 +265,7 @@ def GameTotal(SearchNum,SearchUrl,ID_List):
             db.commit()
         except :
             pass
-    for i in tqdm(range(1,11)): #這裡去處理一個玩家的所有遊戲記錄
+    for i in range(1,11): #這裡去處理一個玩家的所有遊戲記錄
         GameNumber=SearchNum+i
         GameNumber=str(GameNumber)
         GameDetail(i,ID_List) #對所有對戰資訊做查詢
@@ -267,11 +289,9 @@ def SerchUrl(soup,ID_List):
         GameTotal(SearchNum,SearchUrl,ID_List)
         #SearchNum是搜尋次數，用來方便做出0~100的對戰紀錄，否則只會一直1~10重複10次
 
-#多線程功能
-
 def RunThread():
-    soup=url("小孩子的把戲")
-    SerchUrl(soup,"小孩子的把戲")
+    soup=url(Player)
+    SerchUrl(soup,Player)
     #pdb.set_trace()
     ID_Len=len(ID_Array)
     while True:
@@ -288,39 +308,9 @@ def RunThread():
                 startList=i #就將目前運行中的迴圈數存進陣列起始值
                 print "startList:"+startList
 
-def MultiThread():
-    global ID_Queue
-    while True:
-        if not ID_Queue.empty():
-            ID_Queue.get()
-            ID_List=ID_Queue.get()
-            ID_List=str(ID_List)
-            soup=url(ID_List)
-            SerchUrl(soup,ID_List)
-            #pdb.set_trace()
 
-if __name__ == '__main__':
-    p1 = multiprocessing.Process(target=RunThread,)
-    p2 = multiprocessing.Process(target=MultiThread,)
-    p3 = multiprocessing.Process(target=MultiThread,)
-    p4 = multiprocessing.Process(target=MultiThread,)
-    p5 = multiprocessing.Process(target=MultiThread,)
-
-    p6 = multiprocessing.Process(target=MultiThread,)
-    p7 = multiprocessing.Process(target=MultiThread,)
-    p8 = multiprocessing.Process(target=MultiThread,)
-    p9 = multiprocessing.Process(target=MultiThread,)
-    p10 = multiprocessing.Process(target=MultiThread,)
-
-    p1.start()
-    p2.start()
-    p3.start()
-    #p4.start()
-    #p5.start()
-
-
-    #p6.start()
-    #p7.start()
-    #p8.start()
-    #p9.start()
-    #p10.start()
+print "Player:"
+Player=raw_input().decode(sys.stdin.encoding)
+Player=Player.encode('utf-8')
+Player=str(Player)
+RunThread()
