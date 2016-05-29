@@ -3,8 +3,19 @@ import socks,socket,Queue
 from bs4 import BeautifulSoup
 import requests,sys,time
 import MySQLdb,pdb,random
-#import multiprocessing,thread
-#from tqdm import tqdm
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoAlertPresentException
+
+cwd="C:\Python27\Scripts\ChromeWebDrive\chromedriver.exe"
+driver=webdriver.Chrome(cwd)
+driver.get("https://lol.moa.tw")
+
+
+
 
 db = MySQLdb.connect("127.0.0.1","root","admin","gamedata")
 cursor = db.cursor()
@@ -16,7 +27,8 @@ ID_Queue=Queue.Queue()
 insert_database=[] #資料庫指令陣列，每110場對戰資訊查詢後，將資料做一次性的儲存
 def IPLocation():  #查詢IP位置
     res2=requests.get("http://dir.twseo.org/ip-check.php")
-    soup = BeautifulSoup(res2.text,"html.parser")
+    soup = BeautifulSoup(driver.page_source,"html.parser")
+
 
     elenum=0
     for i in soup.select("font"):
@@ -35,17 +47,40 @@ def url (ID,Tor_Proxy):
             if Tor_Proxy==True:
                 socks.setdefaultproxy(socks.SOCKS5, '127.0.0.1', 9150, True)
                 socket.socket = socks.socksocket
-                ##IPLocation() #去查看IP有沒有變化
-                res2=requests.get("https://lol.moa.tw/summoner/show/"+ID) #使用者ID網址
+                #IPLocation() #去查看IP有沒有變化
+                driver.get("https://lol.moa.tw/summoner/show/"+ID)
+
+                #res2=requests.get("https://lol.moa.tw/summoner/show/"+ID) #使用者ID網址
                 urlGet=True
             else:
-                res2=requests.get("https://lol.moa.tw/summoner/show/"+ID) #使用者ID網址
+                driver.get("https://lol.moa.tw/summoner/show/"+ID)
+
+
+                #res2=requests.get("https://lol.moa.tw/summoner/show/"+ID) #使用者ID網址
+
                 urlGet=True
         except:
             urlGet=False
-    soup = BeautifulSoup(res2.text,"html.parser")
-    print soup
-    sys.exit()
+    soup = BeautifulSoup(driver.page_source,"html.parser")
+    elenum=0
+    for ele in soup.select("h2"):
+        elenum=elenum+1
+        if elenum==1:
+            ele=str(ele)
+            ele=ele.split('''>''')[2]
+            ele=ele.split('''<''')[0]
+            if ele=="無此名字 或 伺服器忙碌中，請再試一次。":
+                startList=0
+                ID_Len=len(ID_Array)
+                ID_Len=int(ID_Len)
+                for i in range (startList,ID_Len):
+                    ID_List=ID_Array[i]
+                    ID_List=str(ID_List)
+                    soup=url(ID_List,Tor_Proxy)
+                    return soup
+            else:
+                break
+        break
     return soup
 def GameEquip(soup,EquipNum):
     eleNum=0
@@ -78,15 +113,22 @@ def GameAllPlayer (GameNumCode,Tor_Proxy): #查詢所有玩家的ID  存進陣�
                 socks.setdefaultproxy(socks.SOCKS5, '127.0.0.1', 9150, True)
                 socket.socket = socks.socksocket
                 #IPLocation() #去查看IP有沒有變化
-                res2=requests.get(GameNumCodeStr+GameNumCode) #進入詳細資料網址
+                driver.get(GameNumCodeStr+GameNumCode)
+
+
+                #res2=requests.get(GameNumCodeStr+GameNumCode) #進入詳細資料網址
             else:
                 #IPLocation() #去查看IP有沒有變化
-                res2=requests.get(GameNumCodeStr+GameNumCode) #進入詳細資料網址
+                driver.get(GameNumCodeStr+GameNumCode)
+
+
+                #res2=requests.get(GameNumCodeStr+GameNumCode) #進入詳細資料網址
             urlGet=True
         except:
             urlGet=False
     PlayerNum=0 #定位其餘十位玩家的位置
-    soup = BeautifulSoup(res2.text,"html.parser")
+    soup = BeautifulSoup(driver.page_source,"html.parser")
+
     for ele in soup.select('a'):
         PlayerNum=PlayerNum+1
         for i in range(38,48):
@@ -105,14 +147,20 @@ def GameTotal(SearchNum,SearchUrl,ID_List,Tor_Proxy):
                 socks.setdefaultproxy(socks.SOCKS5, '127.0.0.1', 9150, True)
                 socket.socket = socks.socksocket
                 #IPLocation() #去查看IP有沒有變化
-                res2=requests.get(SearchUrl)
+                driver.get(SearchUrl)
+
+
+                #res2=requests.get(SearchUrl)
             else:
                 #IPLocation() #去查看IP有沒有變化
-                res2=requests.get(SearchUrl)
+                driver.get(SearchUrl)
+
+
+                #res2=requests.get(SearchUrl)
             urlGet=True
         except:
             urlGet=False
-    soup = BeautifulSoup(res2.text,"html.parser")
+    soup = BeautifulSoup(driver.page_source,"html.parser")
     SearchNum=(SearchNum-1)*10
     def GameDetail(GameNum,ID_List):
         GameResult_Num=0 #遊戲結果為1.3.5.7.9.11
@@ -165,7 +213,8 @@ def GameTotal(SearchNum,SearchUrl,ID_List,Tor_Proxy):
                     GameResult=GameResult.split("<")[0]
                     GameResult=str(GameResult)
                     GameDetail_Array.append(GameResult)#將遊戲結果推入陣列中
-
+                    if GameResult=="":
+                        break
                     GameMap=ele.split(">")[7]
                     print "對戰地圖:"+GameMap.split("<")[0]
                     GameMap=GameMap.split("<")[0]
@@ -202,7 +251,8 @@ def GameTotal(SearchNum,SearchUrl,ID_List,Tor_Proxy):
                     GameResult=GameResult.split("<")[0]
                     GameResult=str(GameResult)
                     GameDetail_Array.append(GameResult)#將遊戲結果推入陣列中
-
+                    if GameResult=="":
+                        break
                     GameMap=ele.split(">")[7]
                     print "對戰地圖:"+GameMap.split("<")[0]
                     GameMap=GameMap.split("<")[0]
@@ -244,7 +294,6 @@ def GameTotal(SearchNum,SearchUrl,ID_List,Tor_Proxy):
                 LegendName=ele.split('''"''')[5]
                 print "使用的英雄:"+LegendName
                 GameDetail_Array.append(LegendName)
-
             if recentnum==((GameNum-1)*10)+2:
                 ele=str(ele)
                 print "擊殺:"+ele.split('''"''')[7]
@@ -314,24 +363,26 @@ def SerchUrl(soup,ID_List,Tor_Proxy):
         GameTotal(SearchNum,SearchUrl,ID_List,Tor_Proxy)
         #SearchNum是搜尋次數，用來方便做出0~100的對戰紀錄，否則只會一直1~10重複10次
 
-def RunThread(Tor_Proxy):
+def RunThread(Tor_Proxy,LoopContent):
     soup=url(Player,Tor_Proxy)
     SerchUrl(soup,Player,Tor_Proxy)
+    LoopContent=True
     #pdb.set_trace()
     ID_Len=len(ID_Array)
-    while True:
-        startList=0
-        ID_Len=len(ID_Array)
-        ID_Len=int(ID_Len)
-        for i in range (startList,ID_Len):
-            ID_List=ID_Array[i]
-            ID_List=str(ID_List)
-            soup=url(ID_List,Tor_Proxy)
-            SerchUrl(soup,ID_List,Tor_Proxy)
-            #pdb.set_trace()
-            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
-                startList=i #就將目前運行中的迴圈數存進陣列起始值
-                print "startList:"+startList
+    if LoopContent==True:
+        while True:
+            startList=0
+            ID_Len=len(ID_Array)
+            ID_Len=int(ID_Len)
+            for i in range (startList,ID_Len):
+                ID_List=ID_Array[i]
+                ID_List=str(ID_List)
+                soup=url(ID_List,Tor_Proxy)
+                SerchUrl(soup,ID_List,Tor_Proxy)
+                #pdb.set_trace()
+                if i==ID_Len: #如果迴圈數=陣列元素內的所有值
+                    startList=i #就將目前運行中的迴圈數存進陣列起始值
+                    print "startList:"+startList
 
 
 print "Player:"
@@ -347,4 +398,5 @@ if Tor_Select=="Y":
     Tor_Proxy=True
 if Tor_Select=="N":
     Tor_Proxy=False
-RunThread(Tor_Proxy)
+LoopContent=False #直接跳到去Loop的迴圈
+RunThread(Tor_Proxy,LoopContent)
