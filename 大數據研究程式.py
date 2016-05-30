@@ -23,8 +23,26 @@ utfCode="""SET NAMES 'utf8'"""
 cursor.execute(utfCode)
 GameNumCodeStr="https://lol.moa.tw/match/show/"
 ID_Array = []
+ID_results=[] #SQL 隨機查詢一個ID來跑
 ID_Queue=Queue.Queue()
 insert_database=[] #資料庫指令陣列，每110場對戰資訊查詢後，將資料做一次性的儲存
+def SQL_Random_ID():
+    Find_PlayerID ="SELECT 玩家ID FROM gamedata.lol_player_data"
+    cursor.execute(Find_PlayerID)
+    results_total = cursor.fetchall() #查詢資料庫資料表總數
+    cursor.execute(Find_PlayerID)
+    results_len=len(results_total)
+    results_len=int(results_len)
+    for i in range(0,results_len):
+        results = cursor.fetchone()
+        #print results[0]
+        ID_results.append(results[0])
+    results_random=random.randint(0,results_len)  #隨機查詢ID
+    print "is:"+ID_results[results_random] #顯示結果ID
+    SQL_ID_results=ID_results[results_random]
+    SQL_ID_results=str(SQL_ID_results) #ID結果
+    db.commit()
+    return SQL_ID_results
 def IPLocation():  #查詢IP位置
     res2=requests.get("http://dir.twseo.org/ip-check.php")
     soup = BeautifulSoup(driver.page_source,"html.parser")
@@ -39,26 +57,18 @@ def IPLocation():  #查詢IP位置
             IPStr=IPStr.split("IP")[0]
             IPStr=IPStr.split(" ")[1]
             print "IP Location:"+IPStr
-def url (ID,Tor_Proxy):
+def url (ID):
     ID=str(ID)#使用者ID
     urlGet=False
     while urlGet==False:
         try:
-            if Tor_Proxy==True:
-                socks.setdefaultproxy(socks.SOCKS5, '127.0.0.1', 9150, True)
-                socket.socket = socks.socksocket
-                #IPLocation() #去查看IP有沒有變化
-                driver.get("https://lol.moa.tw/summoner/show/"+ID)
-
-                #res2=requests.get("https://lol.moa.tw/summoner/show/"+ID) #使用者ID網址
-                urlGet=True
-            else:
-                driver.get("https://lol.moa.tw/summoner/show/"+ID)
+            driver.get("https://lol.moa.tw/summoner/show/"+ID)
+            time.sleep(5)
 
 
-                #res2=requests.get("https://lol.moa.tw/summoner/show/"+ID) #使用者ID網址
+            #res2=requests.get("https://lol.moa.tw/summoner/show/"+ID) #使用者ID網址
 
-                urlGet=True
+            urlGet=True
         except:
             urlGet=False
     soup = BeautifulSoup(driver.page_source,"html.parser")
@@ -76,7 +86,7 @@ def url (ID,Tor_Proxy):
                 for i in range (startList,ID_Len):
                     ID_List=ID_Array[i]
                     ID_List=str(ID_List)
-                    soup=url(ID_List,Tor_Proxy)
+                    soup=url(ID_List)
                     return soup
             else:
                 break
@@ -104,25 +114,17 @@ def GameEquip(soup,EquipNum):
             Equip_ele6=ele6.split('''"''')[0]
             return Equip_ele1,Equip_ele2,Equip_ele3,Equip_ele4,Equip_ele5,Equip_ele6
 
-def GameAllPlayer (GameNumCode,Tor_Proxy): #查詢所有玩家的ID  存進陣列裡面
+def GameAllPlayer (GameNumCode): #查詢所有玩家的ID  存進陣列裡面
     GameNumCode=str(GameNumCode)
     urlGet=False
     while urlGet==False:
         try:
-            if Tor_Proxy==True:
-                socks.setdefaultproxy(socks.SOCKS5, '127.0.0.1', 9150, True)
-                socket.socket = socks.socksocket
-                #IPLocation() #去查看IP有沒有變化
-                driver.get(GameNumCodeStr+GameNumCode)
+            #IPLocation() #去查看IP有沒有變化
+            driver.get(GameNumCodeStr+GameNumCode)
+            time.sleep(5)
 
 
-                #res2=requests.get(GameNumCodeStr+GameNumCode) #進入詳細資料網址
-            else:
-                #IPLocation() #去查看IP有沒有變化
-                driver.get(GameNumCodeStr+GameNumCode)
-
-
-                #res2=requests.get(GameNumCodeStr+GameNumCode) #進入詳細資料網址
+            #res2=requests.get(GameNumCodeStr+GameNumCode) #進入詳細資料網址
             urlGet=True
         except:
             urlGet=False
@@ -139,28 +141,22 @@ def GameAllPlayer (GameNumCode,Tor_Proxy): #查詢所有玩家的ID  存進陣�
                 ID_Array.append(PlayerID) #增加進查詢玩家陣列
                 ID_Queue.put(PlayerID)
 
-def GameTotal(SearchNum,SearchUrl,ID_List,Tor_Proxy):
+def GameTotal(SearchNum,SearchUrl,ID_List):
     urlGet=False
     while urlGet==False:
         try:
-            if Tor_Proxy==True:
-                socks.setdefaultproxy(socks.SOCKS5, '127.0.0.1', 9150, True)
-                socket.socket = socks.socksocket
-                #IPLocation() #去查看IP有沒有變化
-                driver.get(SearchUrl)
+            #IPLocation() #去查看IP有沒有變化
+            driver.get(SearchUrl)
+            time.sleep(5)
 
 
-                #res2=requests.get(SearchUrl)
-            else:
-                #IPLocation() #去查看IP有沒有變化
-                driver.get(SearchUrl)
-
-
-                #res2=requests.get(SearchUrl)
+            #res2=requests.get(SearchUrl)
             urlGet=True
         except:
             urlGet=False
     soup = BeautifulSoup(driver.page_source,"html.parser")
+
+
     SearchNum=(SearchNum-1)*10
     def GameDetail(GameNum,ID_List):
         GameResult_Num=0 #遊戲結果為1.3.5.7.9.11
@@ -198,10 +194,11 @@ def GameTotal(SearchNum,SearchUrl,ID_List,Tor_Proxy):
                     ele=str(ele)
                     ele=ele.split('>')[1]
                     Game_Num_Code_ele=ele.split('<')[0]
-                    #if Game_Num_Code_ele==""
                     print "對戰代號:"+Game_Num_Code_ele
+                    if Game_Num_Code_ele=="":
+                        RunThread() #返回重新隨機搜尋
                     Game_Num_Code_ele=str(Game_Num_Code_ele)
-                    GameAllPlayer(Game_Num_Code_ele,Tor_Proxy) #將對戰代號推入查詢所有玩家頁面
+                    GameAllPlayer(Game_Num_Code_ele) #將對戰代號推入查詢所有玩家頁面
                     GameDetail_Array.append(Game_Num_Code_ele) #將對戰代號推入陣列中
 
             for ele in soup.select('tr'):
@@ -212,18 +209,22 @@ def GameTotal(SearchNum,SearchUrl,ID_List,Tor_Proxy):
                     print "遊戲結果:"+GameResult.split("<")[0]
                     GameResult=GameResult.split("<")[0]
                     GameResult=str(GameResult)
-                    GameDetail_Array.append(GameResult)#將遊戲結果推入陣列中
                     if GameResult=="":
-                        break
+                        RunThread() #返回重新隨機搜尋
+                    GameDetail_Array.append(GameResult)#將遊戲結果推入陣列中
                     GameMap=ele.split(">")[7]
                     print "對戰地圖:"+GameMap.split("<")[0]
                     GameMap=GameMap.split("<")[0]
                     GameMap=str(GameMap)
+                    if GameMap=="":
+                        RunThread() #返回重新隨機搜尋
                     GameDetail_Array.append(GameMap)#將對戰地圖推入陣列中
 
                     GameStatus=ele.split(">")[9]
                     GameStatus=GameStatus.split("<")[0]
                     print "對戰類型:"+GameStatus
+                    if GameStatus=="":
+                        RunThread() #返回重新隨機搜尋
                     GameDetail_Array.append(GameStatus)#將對戰類型推入陣列中
                     GameStatus=GameStatus.split("<")[0]
                     GameStatus=str(GameStatus)
@@ -238,7 +239,9 @@ def GameTotal(SearchNum,SearchUrl,ID_List,Tor_Proxy):
                     Game_Num_Code_ele=ele.split('<')[0]
                     print "對戰代號:"+Game_Num_Code_ele
                     Game_Num_Code_ele=str(Game_Num_Code_ele)
-                    GameAllPlayer(Game_Num_Code_ele,Tor_Proxy) #將對戰代號推入查詢所有玩家頁面
+                    if Game_Num_Code_ele=="":
+                        RunThread() #返回重新隨機搜尋
+                    GameAllPlayer(Game_Num_Code_ele) #將對戰代號推入查詢所有玩家頁面
 
                     GameDetail_Array.append(Game_Num_Code_ele) #將對戰代號推入陣列中
 
@@ -250,18 +253,22 @@ def GameTotal(SearchNum,SearchUrl,ID_List,Tor_Proxy):
                     print "遊戲結果:"+GameResult.split("<")[0]
                     GameResult=GameResult.split("<")[0]
                     GameResult=str(GameResult)
-                    GameDetail_Array.append(GameResult)#將遊戲結果推入陣列中
                     if GameResult=="":
-                        break
+                        RunThread() #返回重新隨機搜尋
+                    GameDetail_Array.append(GameResult)#將遊戲結果推入陣列中
                     GameMap=ele.split(">")[7]
                     print "對戰地圖:"+GameMap.split("<")[0]
                     GameMap=GameMap.split("<")[0]
                     GameMap=str(GameMap)
+                    if GameMap=="":
+                        RunThread() #返回重新隨機搜尋
                     GameDetail_Array.append(GameMap)#將對戰地圖推入陣列中
 
                     GameStatus=ele.split(">")[9]
                     GameStatus=GameStatus.split("<")[0]
                     print "對戰類型:"+GameStatus
+                    if GameStatus=="":
+                        RunThread() #返回重新隨機搜尋
                     GameDetail_Array.append(GameStatus)#將對戰類型推入陣列中
 
 
@@ -293,23 +300,33 @@ def GameTotal(SearchNum,SearchUrl,ID_List,Tor_Proxy):
                 ele=str(ele)
                 LegendName=ele.split('''"''')[5]
                 print "使用的英雄:"+LegendName
+                if LegendName=="":
+                    RunThread()
                 GameDetail_Array.append(LegendName)
             if recentnum==((GameNum-1)*10)+2:
                 ele=str(ele)
                 print "擊殺:"+ele.split('''"''')[7]
                 Kill=ele.split('''"''')[7] #擊殺
+                if Kill=="":
+                    RunThread()
                 GameDetail_Array.append(Kill)
 
                 print "死亡:"+ele.split('''"''')[11]
                 Death=ele.split('''"''')[11] #死亡
+                if Death=="":
+                    RunThread()
                 GameDetail_Array.append(Death)
 
                 print "助攻:"+ele.split('''"''')[15]
                 A=ele.split('''"''')[15] #助攻
+                if A=="":
+                    RunThread()
                 GameDetail_Array.append(A)
 
                 KDAScroe=ele.split('''(''')[1]
                 KDAScroe=KDAScroe.split(''')''')[0]
+                if KDAScroe=="":
+                    RunThread()
                 GameDetail_Array.append(KDAScroe)
 
         GameDetail_Len=len(GameDetail_Array)
@@ -344,7 +361,7 @@ def GameTotal(SearchNum,SearchUrl,ID_List,Tor_Proxy):
         GameNumber=str(GameNumber)
         GameDetail(i,ID_List) #對所有對戰資訊做查詢
 
-def SerchUrl(soup,ID_List,Tor_Proxy):
+def SerchUrl(soup,ID_List):
     urlStr="https://lol.moa.tw/Ajax/recentgames/"
     urlnum=0 #要剖析的定位行數，利用他到達指定行數後即停止，即可剖析查詢網址
     pagenum=0 #顯示更多對戰的頁碼
@@ -360,43 +377,28 @@ def SerchUrl(soup,ID_List,Tor_Proxy):
         SearchNum=SearchNum+1
         SearchUrl=urlStr+"/page:"+pagenum+"/sort:GameMatch.createDate/direction:desc"
         SearchUrl=str(SearchUrl)
-        GameTotal(SearchNum,SearchUrl,ID_List,Tor_Proxy)
+        GameTotal(SearchNum,SearchUrl,ID_List)
         #SearchNum是搜尋次數，用來方便做出0~100的對戰紀錄，否則只會一直1~10重複10次
 
-def RunThread(Tor_Proxy,LoopContent):
-    soup=url(Player,Tor_Proxy)
-    SerchUrl(soup,Player,Tor_Proxy)
-    LoopContent=True
+def RunThread():
+    PlayerID=SQL_Random_ID()
+    soup=url(PlayerID)
+    SerchUrl(soup,PlayerID)
     #pdb.set_trace()
     ID_Len=len(ID_Array)
-    if LoopContent==True:
-        while True:
-            startList=0
-            ID_Len=len(ID_Array)
-            ID_Len=int(ID_Len)
-            for i in range (startList,ID_Len):
-                ID_List=ID_Array[i]
-                ID_List=str(ID_List)
-                soup=url(ID_List,Tor_Proxy)
-                SerchUrl(soup,ID_List,Tor_Proxy)
-                #pdb.set_trace()
-                if i==ID_Len: #如果迴圈數=陣列元素內的所有值
-                    startList=i #就將目前運行中的迴圈數存進陣列起始值
-                    print "startList:"+startList
+    while True:
+        startList=0
+        ID_Len=len(ID_Array)
+        ID_Len=int(ID_Len)
+        for i in range (startList,ID_Len):
+            ID_List=ID_Array[i]
+            ID_List=str(ID_List)
+            soup=url(ID_List)
+            SerchUrl(soup,ID_List)
+            #pdb.set_trace()
+            if i==ID_Len: #如果迴圈數=陣列元素內的所有值
+                startList=i #就將目前運行中的迴圈數存進陣列起始值
+                print "startList:"+startList
 
 
-print "Player:"
-Player=raw_input().decode(sys.stdin.encoding)
-Player=Player.encode('utf-8')
-Player=str(Player)
-#print "Is use Tor Proxy??  (Y/N):"
-#Tor_Select=raw_input().decode(sys.stdin.encoding)
-#Tor_Select=Tor_Select.encode('utf-8')
-#Tor_Select=str(Tor_Select)
-Tor_Select="N"
-if Tor_Select=="Y":
-    Tor_Proxy=True
-if Tor_Select=="N":
-    Tor_Proxy=False
-LoopContent=False #直接跳到去Loop的迴圈
-RunThread(Tor_Proxy,LoopContent)
+RunThread()
