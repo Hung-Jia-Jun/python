@@ -73,5 +73,5 @@ if __name__ == '__main__':
 	print u"[遠端連線的主機] : "
 	#SocketTo="localhost"
 	#SocketTo=raw_input()
-	SocketTo="163.18.62.27"
+	SocketTo=""
 	RunThread(SocketTo)
