@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from socket import *
-import multiprocessing,os,sys,pdb
+import SocketServer
+from msvcrt import getch
+import multiprocessing,os,sys,pdb,time,os
 BUFSIZ=1024
 User_Sound=""
-
-
+SceneMode="" #場景模式
+os.system("chcp 950")  #設定字碼頁
 
 
 def WriteSoundTxt(FileLocation,writeTxtInput):
@@ -19,7 +21,17 @@ def ReadSoundTxt(FileLocation):
         pass
     return User_Sound
 
-def RunThread():
+
+
+HOST = ''
+PORT = 47990
+
+ADDR = (HOST,PORT)
+
+def Python_Client(Send_Msg,Re_Msg):
+    Re_Msg=tcpCliSock.recv(BUFSIZ)
+
+def Runthread():
     PlaySound_console=WriteSoundTxt('C:\\A.txt',"") #伺服器端的A.txt辨識指令檔
     Server_Sound_Data=WriteSoundTxt('C:\\PlaySound.txt',"") #伺服器端的Play_Sound.txt
     WriteSoundTxt('C:\\RecogContant.txt',"")#寫入新資料
@@ -30,54 +42,113 @@ def RunThread():
     ADDR = (HOST,PORT)
     tcpSerSock = socket(AF_INET, SOCK_STREAM)
     tcpSerSock.bind(ADDR)
-    tcpSerSock.listen(5)
+    tcpSerSock.listen(50)
     User_Sound=""
     Temp_Server_Data=""
     Temp_Sound_Console=""
     Temp_RecogContant=""
     Recv_Client_Message=""
     Tempdata=""
+    SoundList=[]
+
+
+    LanguageMode="Chinese"
+    PythonConsole="2" #控制客戶端的python
+    PlaySound_text="is Message" #發聲字串
+
+    i=0
+    ScenesMode=0
     while True:
-        #pdb.set_trace()
         print 'waiting for Client connection...'
         tcpCliSock,addr = tcpSerSock.accept()
+        #os.system("cls")
         print 'connected Client from: ',addr,".................."
         while True:
-            #pdb.set_trace()
 
             try:
                 tcpCliSock.send(" ")#測試connet狀態
-                Recv_Client_Message=tcpCliSock.recv(BUFSIZ) #接收Client python指令
-                if Recv_Client_Message=="Clinet Connet":
-                    Recv_Client_Message=""
-            except:
+                Recv_Client_Message=tcpCliSock.recv(BUFSIZ) #接收指令                   
+            except :
                 break #進入等待client的迴圈等待連線
 
-            PlaySound_console=ReadSoundTxt('C:\\A.txt') #伺服器端的A.txt辨識指令檔
-            Server_Sound_Data=ReadSoundTxt('C:\\PlaySound.txt') #伺服器端的Play_Sound.txt
-            if Server_Sound_Data=="":
-                pass
-            else:
-                if (Server_Sound_Data!=Temp_Server_Data): #如果發送前的資料 與上次發送的內容部不一樣
-                    Temp_Server_Data=Server_Sound_Data;#把現在這個較新的資料存入暫存器
-                    #Server_Sound_Data="Sound_Data"+Server_Sound_Data
-                    print "Sound_Data Send..."
-                    try:
-                        tcpCliSock.send("Sound_Data"+Server_Sound_Data) #發送更新的伺服器發聲資料
-                    except :
-                        pass
+            Return_Client_py="Send_To_PythonClient:"+PythonConsole+","+LanguageMode+","+PlaySound_text #建構出返回數據  格式為"PythonConsole辨識/發聲,LanguageMode 語言,PlaySound_text  發聲語句,"
+            pdb.set_trace()
+            tcpCliSock.send(Return_Client_py)
+            
+            #if Recv_Client_Message[0:13]=="TxtRecognize=":  #
+            #    Recv_Client_Message=Recv_Client_Message.replace("TxtRecognize=","") #把Playsound_console=替換成""
+            #    PythonConsole=Recv_Client_Message
+            #    print "Get TxtRecognize: ",PythonConsole
 
 
-            if PlaySound_console=="":
-                pass
-            else:
-                if (PlaySound_console!=Temp_Sound_Console): #如果發送前的資料 與上次發送的內容部不一樣
-                    Temp_Sound_Console=PlaySound_console;#把現在這個較新的資料存入暫存器
-                    print "Playsound_console Send..."
-                    try:
-                        tcpCliSock.send("Playsound_console"+PlaySound_console) #發送更新的伺服器發聲命令
-                    except :
-                        pass
+
+            if Recv_Client_Message[0:9]=="PlaySound": #處理發聲音檔
+                Recv_Client_Message=Recv_Client_Message.replace("PlaySound","") #把PlaySound這個特徵碼拿掉
+                PlaySound_text=Recv_Client_Message #把字串存進發聲的變數
+                print "Client PlaySound: ",PlaySound_text
+
+
+
+
+
+            if Recv_Client_Message[0:12]=="TxtRecognize":  #clinet端向Server查詢辨識後的字串
+                print "Send TxtRecognize: "
+                tcpCliSock.send(Return_message) #回傳server端接收到的使用者辨識字串
+
+
+
+            if Recv_Client_Message[0:18]=="Playsound_console=":
+                Recv_Client_Message=Recv_Client_Message.replace("Playsound_console=","") #把Playsound_console=替換成""
+                PythonConsole=Recv_Client_Message
+                print PythonConsole
+            if Recv_Client_Message[0:9]=="Sound_Str":  #處理劇本
+                SendMsg=""
+                ArrayLen=len(SoundList)-3
+                if ArrayLen==0:
+                    ArrayLen=0
+                for i in range(0,ArrayLen):
+                    List_Str=SoundList[i]
+                    SendMsg+=List_Str+","
+                tcpCliSock.send(SendMsg)
+                print "Server Send: ",SendMsg
+                tcpCliSock.close()
+
+
+
+
+
+
+            if Recv_Client_Message[0:6]=="P5_Msg":  #處理劇本
+                Recv_Client_Message=Recv_Client_Message.replace("P5_Msg","") #替換掉P5_Msg變成空值
+                P5_Msg=Recv_Client_Message.split(",")
+                SoundList+=P5_Msg #將劇本檔存入陣列中
+                for SoundContant in SoundList: #印出劇本陣列
+                    Recv_Client_Message=SoundContant #把當前劇本的語句存入Msg裡面去比對有沒有場景控制字元出現
+                    if Recv_Client_Message[0:12]=="Scenes Mode=": #如果場景控制字元出現
+                        Recv_Client_Message=Recv_Client_Message.replace("Scenes Mode=","") #替換掉"Scenes Mode="變成空值
+                        ScenesMode=Recv_Client_Message
+                        print "ScenesMode is : ",ScenesMode
+                    elif Recv_Client_Message[0:9]=="Language=": #如果場景控制字元出現
+                        Recv_Client_Message=Recv_Client_Message.replace("Language=","") #替換掉"Scenes Mode="變成空值
+                        LanguageMode=Recv_Client_Message
+                        print "Language is : ",LanguageMode
+                        #tcpCliSock.close() #關閉server連線
+                    else:
+                        print SoundContant #印出劇本陣列
+
+
+
+
+
+            if Recv_Client_Message[0:5]=="Clear":  #清空劇本內容
+                print "Clear SoundStr Array"
+                del SoundList[:]
+                print SoundList
+                #tcpCliSock.close() #關閉server連線
+
+
+
+
 
 
 
@@ -97,11 +168,11 @@ def RunThread():
 
 
 
-    tcpSerSock.close()
+        tcpCliSock.close()
 
 
 
 
 
-RunThread()
+Runthread()
 

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from socket import *
-import multiprocessing,pdb
+import multiprocessing,pdb,sys,os
+from msvcrt import getch
 User_Sound=""
 BUFSIZ = 1024
+os.system("chcp 950")  #設定字碼頁
 
 def WriteSoundTxt(FileLocation,writeTxtInput):
         f = open(FileLocation, 'w') #要同步的playsound.txt
@@ -30,11 +32,27 @@ def RunThread(SocketTo):
 	Tempdata=""
 	Console_Tempdata=""
 	Temp_RecogContant=""
+	Temp_Recv_data=""  #暫存的Recv Data
 	while True:
 		#pdb.set_trace()
-
 		Recv_Server_Message=tcpCliSock.recv(BUFSIZ) #接收server指令
-		tcpCliSock.send(" ")#發送空值不然server會一直等待
+		print Recv_Server_Message
+
+
+		if Recv_Server_Message[0:21]=="Send_To_PythonClient:": #當接收到server專屬傳給python Client的字串時
+			Recv_Server_Message=Recv_Server_Message.replace("Send_To_PythonClient:","").strip() #替換掉特徵字元  "Send_To_PythonClient"
+			if Temp_Recv_data!=Recv_Server_Message:
+				Temp_Recv_data=Recv_Server_Message
+				Client_Console=Recv_Server_Message.split(",")[0]
+				Language=Recv_Server_Message.split(",")[1]
+				Message=Recv_Server_Message.split(",")[2]
+				#os.system("cls")
+				print "Client_Console : ",Client_Console #顯示命令
+				print "Language : ",Language
+				print "Message: ",Message
+				print "------------------------------------"
+				#pdb.set_trace()
+				#sys.exit()
 
 		if Recv_Server_Message[0:10]=="Sound_Data":
 			message=Recv_Server_Message.split("Sound_Data")[1]
@@ -73,5 +91,5 @@ if __name__ == '__main__':
 	print u"[遠端連線的主機] : "
 	#SocketTo="localhost"
 	#SocketTo=raw_input()
-	SocketTo=""
+	SocketTo="localhost"
 	RunThread(SocketTo)
