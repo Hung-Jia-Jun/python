@@ -50,6 +50,15 @@ def Runthread():
     Recv_Client_Message=""
     Tempdata=""
     SoundList=[]
+    SoundList.append("我是誰")
+    SoundList.append("你好阿")
+    SoundList.append("我是誰")
+    SoundList.append("你好阿")
+    SoundList.append("我是誰")
+    SoundList.append("你好阿")
+
+
+
 
 
     LanguageMode="Chinese"
@@ -67,14 +76,13 @@ def Runthread():
 
             try:
                 tcpCliSock.send(" ")#測試connet狀態
-                Recv_Client_Message=tcpCliSock.recv(BUFSIZ) #接收指令                   
+                Recv_Client_Message=tcpCliSock.recv(BUFSIZ) #接收指令
             except :
                 break #進入等待client的迴圈等待連線
 
-            Return_Client_py="Send_To_PythonClient:"+PythonConsole+","+LanguageMode+","+PlaySound_text #建構出返回數據  格式為"PythonConsole辨識/發聲,LanguageMode 語言,PlaySound_text  發聲語句,"
-            pdb.set_trace()
-            tcpCliSock.send(Return_Client_py)
-            
+            #Return_Client_py="Send_To_PythonClient:"+PythonConsole+","+LanguageMode+","+PlaySound_text #建構出返回數據  格式為"PythonConsole辨識/發聲,LanguageMode 語言,PlaySound_text  發聲語句,"
+            #tcpCliSock.send(Return_Client_py)
+
             #if Recv_Client_Message[0:13]=="TxtRecognize=":  #
             #    Recv_Client_Message=Recv_Client_Message.replace("TxtRecognize=","") #把Playsound_console=替換成""
             #    PythonConsole=Recv_Client_Message
@@ -175,4 +183,3 @@ def Runthread():
 
 
 Runthread()
-
