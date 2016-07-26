@@ -25,7 +25,7 @@ def RunThread(SocketTo):
 
 
 
-	PORT = 47990
+	PORT = 47991
 	ADDR = (SocketTo,PORT) #IP位置看  Cmd 輸入指令ipconfig 查看IPv4位置貼上來
 	tcpCliSock = socket(AF_INET,SOCK_STREAM)
 	tcpCliSock.connect(ADDR)
@@ -35,9 +35,10 @@ def RunThread(SocketTo):
 	Temp_Recv_data=""  #暫存的Recv Data
 	while True:
 		#pdb.set_trace()
+		print "Python Client"
+		#tcpCliSock.send("Python Client")
 		Recv_Server_Message=tcpCliSock.recv(BUFSIZ) #接收server指令
-		print Recv_Server_Message
-
+		print "user:",Recv_Server_Message
 
 		if Recv_Server_Message[0:21]=="Send_To_PythonClient:": #當接收到server專屬傳給python Client的字串時
 			Recv_Server_Message=Recv_Server_Message.replace("Send_To_PythonClient:","").strip() #替換掉特徵字元  "Send_To_PythonClient"
@@ -46,8 +47,10 @@ def RunThread(SocketTo):
 				Client_Console=Recv_Server_Message.split(",")[0]
 				Language=Recv_Server_Message.split(",")[1]
 				Message=Recv_Server_Message.split(",")[2]
-				#os.system("cls")
+				os.system("cls")
 				print "Client_Console : ",Client_Console #顯示命令
+				if 	Client_Console=="1"
+					WriteSoundTxt('C:\\A_Client.txt',"1") #伺服器端的A.txt辨識指令檔
 				print "Language : ",Language
 				print "Message: ",Message
 				print "------------------------------------"
