@@ -29,14 +29,6 @@ def RunThread():
 		tcpCliSock.send(SendPass)
 		tcpCliSock.send("Login_Facebook")
 		raw_input()
-
+		tcpCliSock.send("Create_Room") #創建房間
 if __name__ == '__main__':  #如果執行的是本體的話，才執行下面的語句
-	print u"[遠端連線的主機] : "
-	#SocketTo="localhost"
-	#SocketTo=raw_input()
-	#SocketTo="localhost"
-
-	#threading.Thread(target=RunThread).start()
-
 	RunThread()
-	#Run_SocketServer()
