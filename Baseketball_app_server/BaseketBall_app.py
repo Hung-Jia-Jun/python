@@ -5,6 +5,15 @@ from msvcrt import getch
 User_Sound=""
 BUFSIZ = 2048
 os.system("chcp 950")  #設定字碼頁
+
+
+def Recv_Data(tcpCliSock_ref):
+	while True:
+		try:
+			RecvData=tcpCliSock_ref.recv(BUFSIZ)
+			print "RecvData is : ",RecvData
+		except :
+			pass
 def RunThread():
 
 	SocketTo="localhost"  #遠端server  要改
@@ -21,6 +30,7 @@ def RunThread():
 
 	print "UserPass: "
 	UserPass=raw_input()
+	threading.Thread(target=Recv_Data,args=(tcpCliSock,)).start() #使用者回應線程
 	while True:
 		#Recv_Server_Message=tcpCliSock.recv(BUFSIZ) #接收server指令
 		SendName="Login_Facebook_Username"+Username
@@ -30,5 +40,7 @@ def RunThread():
 		tcpCliSock.send("Login_Facebook")
 		raw_input()
 		tcpCliSock.send("Create_Room") #創建房間
+
+
 if __name__ == '__main__':  #如果執行的是本體的話，才執行下面的語句
-	RunThread()
+	threading.Thread(target=RunThread).start()
