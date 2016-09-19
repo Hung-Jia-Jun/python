@@ -18,9 +18,8 @@ def Recv_Data(tcpCliSock_ref):
 			if RecvData[0:13]=="RoomBroadcast":
 				GetRoomCode=RecvData.split("|")[1]
 				GetRoomMsg=RecvData.split("|")[2]
-				if GetRoomCode==Room_Code: #if Get server send Room message ,check the room code
-					print "RoomCode is : ",GetRoomCode #if code is same the user
-					print "RoomMsg is : ",GetRoomMsg
+				#if GetRoomCode==Room_Code: #if Get server send Room message ,check the room code
+				print "RoomMsg is : ",GetRoomMsg
 		except :
 			pass
 def RunThread():
@@ -35,10 +34,10 @@ def RunThread():
 	Username=""
 	UserPass=""
 	print "Username: "
-	Username=raw_input()
+	#Username=raw_input()
 
 	print "UserPass: "
-	UserPass=raw_input()
+	#UserPass=raw_input()
 	threading.Thread(target=Recv_Data,args=(tcpCliSock,)).start() #使用者回應線程
 
 
