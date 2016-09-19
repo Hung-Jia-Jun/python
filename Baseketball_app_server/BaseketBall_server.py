@@ -2,6 +2,7 @@
 from socket import *
 import SocketServer,random,pdb
 from msvcrt import getch
+import numpy
 
 import multiprocessing,os,sys,pdb,time,os,threading
 BUFSIZ = 2048  #socket 傳輸單檔大小
@@ -11,7 +12,9 @@ py_socket_Broad=[] #the server send other user message is used
 RoomList=[] #the game room list save total online game match,
 			#this way can protect all team room not repeat in same
 
-Game_Room_soc=[]
+
+Game_Room_soc=[][] #In this room ,player socket reference in here
+
 def Get_User_Server():  #管理使用者連接伺服器的陣列
 	py_tcpSerSock = socket(AF_INET, SOCK_STREAM)
 	py_tcpSerSock.bind(('',31500))
@@ -26,7 +29,8 @@ def Get_User_Server():  #管理使用者連接伺服器的陣列
 		Socket_Ref=py_tcpCliSockarr.pop(SocketLocation) #Select Obj in array and drop it!
 		threading.Thread(target=SocketServer,args=(Socket_Ref,)).start() #使用者回應線程
 
-def Game_Room(py_tcpCliSockarr):
+def Game_Room(Room_Num): #In Game Room Player Can Get Message 
+	print "The Game room have created the Number is : ",Room_Num
 	while True:
 		for i in range()
 			Game_Room_soc[i].send
@@ -68,7 +72,8 @@ def SocketServer(py_tcpCliSockarr):
 					Room_NumMsg="RoomNum"+Room_Num
 					py_tcpCliSockarr.send(Room_NumMsg) #send room number
 					Room_Num=int(Room_Num) #recover to int
-					threading.Thread(target=Game_Room,args=(Socket_Ref,)).start()
+					Game_Room_soc.append(py_tcpCliSockarr) #Add this Socket reference in array
+					threading.Thread(target=Game_Room,args=(Room_Num,)).start()
 					break
 		if UserRecv[0:10]=="Enter_Room": #if server get client send the room code search created room have created?
 			RoomCode=UserRecv.replace("Enter_Room","") #Replace this string "Enter_Room" to get real room code
@@ -77,6 +82,8 @@ def SocketServer(py_tcpCliSockarr):
 			try:
 				RoomList.index(RoomCode) #Search The user Send Room code ,if not found then goto except function
 				py_tcpCliSockarr.send("Found this room code")
+				py_tcpCliSockarr
+				Game_Room_soc.append(py_tcpCliSockarr) #Add this Socket reference in array
 			except:
 				py_tcpCliSockarr.send("Not Found this room code.....")
 			RoomCode=str(RoomCode)
