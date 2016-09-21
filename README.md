@@ -46,6 +46,20 @@ help user deside this stock next trend
 
 this is application run time snapshot
 
-crawl this web server data
-url:http://w.wantgoo.com/  
+crawl this web server data   [Link to wantgo]http://w.wantgoo.com/  
 ![stockpic2](https://github.com/JasonHome123/python/blob/master/ShowImg/%E6%93%B7%E5%8F%963.PNG)
+
+
+##code name:  
+###BigDataReserch.py  
+
+I write this script with use to my paper  
+
+My application can crawl the 「League of legends」 database  
+
+this database allow player check his gaming log  
+![BigDataResearch](https://github.com/JasonHome123/python/blob/master/ShowImg/%E6%93%B7%E5%8F%964.PNG)
+the picture show the all of player close to three hundred thousand player match game data 
+one game of field need to ten player add this game  
+![player game detail](https://github.com/JasonHome123/python/blob/master/ShowImg/%E6%93%B7%E5%8F%965.PNG)  
+this picture show the python console line to specific player game detail  
