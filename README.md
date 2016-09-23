@@ -59,7 +59,18 @@ My application can crawl the 「League of legends」 database
 
 this database allow player check his gaming log  
 ![BigDataResearch](https://github.com/JasonHome123/python/blob/master/ShowImg/%E6%93%B7%E5%8F%964.PNG)
-the picture show the all of player close to three hundred thousand player match game data 
+the picture show the all of player ,might close to three hundred thousand player match game of data  
 one game of field need to ten player add this game  
 ![player game detail](https://github.com/JasonHome123/python/blob/master/ShowImg/%E6%93%B7%E5%8F%965.PNG)  
 this picture show the python console line to specific player game detail  
+
+##code name:
+###Google_play_sound.py
+Google_play_sound.py use the google translate web site sound feature
+not use the google web speech recogenize api develop tool  
+Read system of C:\ local directory Sound.txt first line contant 
+and send message to chrome webdriver  
+the script feature will loop detection the text file contant  
+if text file modifed ,the application will get this modifed contant 
+and send to google translate web site text input frame 
+next step to click sound button
