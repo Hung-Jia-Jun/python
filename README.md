@@ -82,5 +82,5 @@ can allow user hold mic to say something word
 and system pull the text to google server of speech recognize  
 The google server will be response text to python script application  
 next step to write txt file for save  
-simple recognize result:
+simple recognize result:  
 ![Simple result](https://github.com/JasonHome123/python/blob/master/ShowImg/%E6%93%B7%E5%8F%96.PNG)
