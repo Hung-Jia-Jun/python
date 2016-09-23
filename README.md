@@ -9,8 +9,9 @@ and then i will show my code in run time picture for my computer snapshot
 
 *   [Code list](#overview)
     *   [LineSendMsg.py](#LineSendMsg)
-    *   [StockRobot.py](#html)
-    *   [BigDataReserch.py](#autoescape)
+    *   [StockRobot.py](#StockRobot)
+    *   [BigDataReserch.py](#BigDataReserch)
+    *   [Google_play_sound.py](#Google_play_sound)
 
 
 ##code name:   
@@ -36,7 +37,7 @@ user can watch this message
 
 
 ##code name:   
-###StockRobot.py
+<h3 id="StockRobot">StockRobot.py</h3>
 This stock bot allow user input want to select stock 
 
 and show this stock code to user 
@@ -55,8 +56,7 @@ crawl this web server data [Link to wantgo](http://w.wantgoo.com/)
 
 
 ##code name:  
-###BigDataReserch.py  
-
+<h3 id="BigDataReserch">BigDataReserch.py</h3>
 I write this script with use to my paper  
 
 My application can crawl the 「League of legends」 database  
@@ -69,7 +69,7 @@ one game of field need to ten player add this game
 this picture show the python console line to specific player game detail  
 
 ##code name:
-###Google_play_sound.py
+<h3 id="Google_play_sound">Google_play_sound.py</h3>
 ![Google translate](https://github.com/JasonHome123/python/blob/master/ShowImg/1474614819781.jpg)
 Google_play_sound.py bulid above the google translate web site of sound feature  
 not use the google web speech recogenize api develop tool  
