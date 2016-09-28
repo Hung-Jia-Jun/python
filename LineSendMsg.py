@@ -3,15 +3,34 @@ import sys
 import io,os
 from tqdm import *
 import math
+from time import *
 from line import LineClient, LineGroup, LineContact
 
 from time import strftime
 import time
 user_Pos=0  #user position normal
+
+read_contant=[]
+local=os.getcwd()
+def Txt_io(line_num):
+	global read_contant
+	del read_contant[:] #del the read file contant
+	txtName="\Password.txt"
+	io_open_cmd=local+txtName
+	io_obj=io.open(io_open_cmd, 'r',encoding = 'utf-8') #文字檔位置
+	while True:
+		read_cont = io_obj.readline() #逐行讀取文字檔
+		read_cont=read_cont.replace("\n","")
+		read_contant.append(read_cont)
+		if read_cont=="":
+			break
+	return read_contant[line_num]
+
 def Select_user_send(TotalUser,MsgLen):
 	lenNum=0
 	Msg_Encode=""
 	for i in tqdm(range(0,TotalUser)):
+		sleep(5)
 		if i<MsgLen:  #use this way to protect array outrange except cause
 			user_Pos=i
 			Msg_Encode=Msg_Str_contant[i].encode("utf-8")
@@ -56,14 +75,14 @@ def Read_Txt():
 Read_Txt()
 
 #client = LineClient(authToken="E8KgMu44vmkA7m4Nhv30.YscyjjrBJvRwlj43Q3diOa./6pH4n6MhuUtN11JzTvHSUbFcbiNrf+s+ojB5x0ne7Q=")
-print u"請輸入Line帳號: "
-Line_user=raw_input()
-print u"請輸入Line密碼: "
-Line_pass=raw_input()
+
+
+Line_user=Txt_io(0)
+Line_pass=Txt_io(1)
+print u"需驗證的使用者: ",Line_user
 client = LineClient(Line_user,Line_pass)
 #print client.authToken  #print the Line access token
 #client.contacts[13].sendMessage("Test")  #Send message to user
-
 
 
 Len_Msg_Arr=len(Msg_Str_contant) #User want to send message array
@@ -71,3 +90,4 @@ Len_Msg_Arr=len(Msg_Str_contant) #User want to send message array
 all_friend=len(client.contacts)  #total user friend
 
 Select_user_send(all_friend,Len_Msg_Arr) #send all friend
+print u"傳送成功"
