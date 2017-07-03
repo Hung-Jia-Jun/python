@@ -4,6 +4,16 @@ import urllib.request
 import random
 import sqlite3
 import time
+import os
+
+import os.path
+if os.path.isfile(os.getcwd()+"/Pic.db") ==False:
+	conn = sqlite3.connect('Pic.db')
+	cursor = conn.cursor()
+	conn.execute('''CREATE TABLE Picture(_Pic TEXT NOT NULL);''')
+	conn.commit()
+	conn.close()
+
 SleepTime=input ("Sleep time?")
 LoopUse=input('''Loop Crawler true or false use "1" or "0" ?''')
 while LoopUse=="1":
@@ -15,4 +25,5 @@ while LoopUse=="1":
 	cursor = conn.cursor()
 	cursor.execute('''insert into Picture (_Pic) values ("'''+str(encoded_string)+'")''')
 	conn.commit()
+	conn.close()
 	time.sleep(int(SleepTime))
