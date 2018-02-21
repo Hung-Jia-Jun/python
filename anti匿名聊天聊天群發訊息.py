@@ -29,6 +29,7 @@ def StartRandomChat(sessionToken):
 		return None,None
 
 def SendRandomChatMsg(ObjectID,guestId,sessionToken): #發送隨機聊天的訊息
+	global FuckMessages
 	if (ObjectID==None or guestId==None):
 		return None
 	else:
@@ -41,7 +42,7 @@ def SendRandomChatMsg(ObjectID,guestId,sessionToken): #發送隨機聊天的訊�
 			}
 		payload = {
 		"dialogue": ObjectID,
-		"message": "Hi,想約炮嗎？",
+		"message": FuckMessages,
 		"receiver":guestId
 		}
 		file = open("已發送隨機聊天列表.txt", "r") 
@@ -70,14 +71,15 @@ def Login(Username,Password):
 	}
 	LoginReq=requests.post("https://antich.at/parse/login", data=payload,verify=False,headers=headers).text
 	return json.loads(LoginReq)["sessionToken"]
-  
-Username=""
-Password=""
+
+
+Username=input("請輸入帳號:")
+Password=input("請輸入密碼:")
+FuckMessages=input("請輸入要發的訊息:")
 sessionToken=Login(Username,Password)
 while True:
 	#req = requests.get('https://ps.pndsn.com/v2/subscribe/sub-c-24884386-3cf2-11e5-8d55-0619f8945a4f/9tM11YKWRN,DlpLqXVl4R,L8VRfrgFxI/0?deviceid=826FCAA8-9DBF-42C2-A01F-879F925F823F&uuid=9tM11YKWRN&pnsdk=PubNub-ObjC-iOS%2F4.6.1&auth=9tM11YKWRN1516626228&tt=15188086761225512',verify=False)
 	#Reqtext=req.text
 	ObjectID,guestId=StartRandomChat(sessionToken)
 	SendRandomChatMsg(ObjectID,guestId,sessionToken)#建立隨機聊天並發送訊息
-
 
