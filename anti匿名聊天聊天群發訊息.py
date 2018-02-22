@@ -3,7 +3,6 @@ import requests
 import time,pdb,json
 import multiprocessing,pdb,sys,os,threading
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
@@ -21,16 +20,17 @@ def StartRandomChat(sessionToken):
 	"myLastChats": []
 	}	
 	try:
-	    RandomChatReq=requests.post("https://antich.at/parse/functions/startRandomChat", data=payload,verify=False,headers=headers).text
+		RandomChatReq=requests.post("https://antich.at/parse/functions/startRandomChat", data=payload,verify=False,headers=headers).text
 		ObjectID=RandomChatReq.split("objectId")[1].split(",")[0].replace('''":"''',"").split('"')[0]
 		guestId=RandomChatReq.split("guestId")[1].split(",")[0].replace('''":"''',"").split('"')[0]
-		return ObjectID,guestId
+		guestname=RandomChatReq.split("guestname")[1].split(",")[0].replace('''":"''',"").split('"')[0]
+		return ObjectID,guestId,guestname.split(" ")[0]
 	except:
-		return None,None
-
+		return None,None,None
+num=1
 def SendRandomChatMsg(sessionToken): #發送隨機聊天的訊息
-	global FuckMessages
-	ObjectID,guestId=StartRandomChat(sessionToken)
+	global FuckMessages,num
+	ObjectID,guestId,guestname=StartRandomChat(sessionToken)
 	if (ObjectID==None or guestId==None):
 		return None
 	else:
@@ -50,7 +50,11 @@ def SendRandomChatMsg(sessionToken): #發送隨機聊天的訊息
 		IsSendRandomList=file.read().split("\n")
 		if guestId not in IsSendRandomList:
 			SendStat=requests.post("https://antich.at/parse/classes/Messages", data=payload,verify=False,headers=headers).text
-			print ("已發送邀請給"+str(guestId))
+			try:
+				print (str(num)+".已發送訊息給"+guestname+" ID:"+str(guestId))
+			except:
+				print (str(num)+".已發送訊息給"+str(guestId))
+			num+=1
 			#pdb.set_trace()
 			file = open("已發送隨機聊天列表.txt","a") 
 			file.write(str(guestId)+"\n") 
