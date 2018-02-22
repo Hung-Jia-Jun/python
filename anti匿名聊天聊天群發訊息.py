@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import requests
 import time,pdb,json
-
+import multiprocessing,pdb,sys,os,threading
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -20,16 +20,17 @@ def StartRandomChat(sessionToken):
 	"v": "1518",
 	"myLastChats": []
 	}	
-	RandomChatReq=requests.post("https://antich.at/parse/functions/startRandomChat", data=payload,verify=False,headers=headers).text
 	try:
+	    RandomChatReq=requests.post("https://antich.at/parse/functions/startRandomChat", data=payload,verify=False,headers=headers).text
 		ObjectID=RandomChatReq.split("objectId")[1].split(",")[0].replace('''":"''',"").split('"')[0]
 		guestId=RandomChatReq.split("guestId")[1].split(",")[0].replace('''":"''',"").split('"')[0]
 		return ObjectID,guestId
 	except:
 		return None,None
 
-def SendRandomChatMsg(ObjectID,guestId,sessionToken): #發送隨機聊天的訊息
+def SendRandomChatMsg(sessionToken): #發送隨機聊天的訊息
 	global FuckMessages
+	ObjectID,guestId=StartRandomChat(sessionToken)
 	if (ObjectID==None or guestId==None):
 		return None
 	else:
@@ -80,6 +81,6 @@ sessionToken=Login(Username,Password)
 while True:
 	#req = requests.get('https://ps.pndsn.com/v2/subscribe/sub-c-24884386-3cf2-11e5-8d55-0619f8945a4f/9tM11YKWRN,DlpLqXVl4R,L8VRfrgFxI/0?deviceid=826FCAA8-9DBF-42C2-A01F-879F925F823F&uuid=9tM11YKWRN&pnsdk=PubNub-ObjC-iOS%2F4.6.1&auth=9tM11YKWRN1516626228&tt=15188086761225512',verify=False)
 	#Reqtext=req.text
-	ObjectID,guestId=StartRandomChat(sessionToken)
-	SendRandomChatMsg(ObjectID,guestId,sessionToken)#建立隨機聊天並發送訊息
+	#threading.Thread(target=SendRandomChatMsg,args=(sessionToken,)).start() #建立隨機聊天並發送訊息
+	SendRandomChatMsg(sessionToken)
 
