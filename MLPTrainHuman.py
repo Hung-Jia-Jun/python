@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
 import numpy
 import pandas as pd
 from sklearn import preprocessing
@@ -17,8 +19,8 @@ from IPython.display import Image
 from os import listdir
 import pdb
 from os.path import isfile, join
-mypath="C:\\ProgramData\\Anaconda3\\Scripts\\OpenCVDetect\\FindedHuman"
-TestDataPath="C:\\ProgramData\\Anaconda3\\Scripts\\OpenCVDetect\\TestData"
+mypath="/Users/Jason/Desktop/CameraDetectHuman/TrainData"
+TestDataPath="/Users/Jason/Desktop/CameraDetectHuman/TestData"
 
 TestDatafiles = [f for f in listdir(TestDataPath) if isfile(join(TestDataPath, f))]
 onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
@@ -34,7 +36,7 @@ for file in onlyfiles:
 	if "png" in file:
 		AasonLine=[]
 		AasonLine.append(file.split("(")[0])
-		img = cv2.imread(mypath+"\\"+file,0)
+		img = cv2.imread(mypath+"/"+file,0)
 		for ele in img:
 			for ele2 in ele:
 				AasonLine.append(ele2)
@@ -43,8 +45,8 @@ for file in onlyfiles:
 for file in TestDatafiles:
 	if "png" in file:
 		Test_AasonLine=[]
-		AasonLine.append(file.split("(")[0])
-		img = cv2.imread(TestDataPath+"\\"+file,0)
+		Test_AasonLine.append(file.split("(")[0])
+		img = cv2.imread(TestDataPath+"/"+file,0)
 		for ele in img:
 			for ele2 in ele:
 				Test_AasonLine.append(ele2)
@@ -104,6 +106,16 @@ def show_train_history(train_history,train,validation):
 	plt.legend(['train','validation'],loc="upper left")
 	plt.show()
 
+
+def PreprocessData(RawData):
+	TotalRaw=[]
+	RawDataOnehot=[]
+	for ele in RawData:
+		for ele2 in ele:
+			RawDataOnehot.append(int(ele2)/255)
+		TotalRaw.append(RawDataOnehot)
+
+	return TotalRaw
 numpy.random.seed(10)
 
 
@@ -114,29 +126,32 @@ X_train_df=AllX_train_df
 
 #(X_train_image,y_train_label),(X_test_image,y_test_label)=mnist.load_data()
 
-#train列
-X_Train=X_train_df
+
 
 #train label
 y_train_label=[]
 for ele in X_train_df:
 	y_train_label.append(ele[0])
 
-#驗證資料
-X_Test=X_test_df
+
 
 #驗證Label
 y_test_label=[]
-for ele in X_train_df:
+for ele in X_test_df:
 	y_test_label.append(ele[0])
 
-pdb.set_trace()
+
+#train列
+X_Train=X_train_df
+#驗證資料
+X_Test=X_test_df
+
 #X_Train=X_train_image.reshape(60000,784).astype('float32') #轉換成一維的向量
 #X_Test=X_test_image.reshape(10000,784).astype('float32') #轉換成一維的向量
 
 #圖像
-X_Train_normalize=X_Train/255
-X_Test_normalize=X_Test/255
+X_Train_normalize=PreprocessData(X_Train)
+X_Test_normalize=PreprocessData(X_Test)
 
 #圖像真實值 onehot處理  1=1000000000  2=0100000000  5=0000500000
 y_TrainOneHot=np_utils.to_categorical(y_train_label)
@@ -148,7 +163,7 @@ model=Sequential()
 #units=1000 隱藏層1000神經元
 #input_dim=337920 輸入層 337920個
 model.add(Dense(units=1000,
-				input_dim=337920,
+				input_dim=8785946,
 				kernel_initializer="uniform",
 				activation='relu'))
 
@@ -156,7 +171,7 @@ model.add(Dropout(0.5)) #隨機捨棄50%的神經節點
 
 #隱藏層
 model.add(Dense(units=1000,
-				input_dim=337920,
+				input_dim=8785946,
 				kernel_initializer="uniform",
 				activation='relu'))
 model.add(Dropout(0.5)) #隨機捨棄50%的神經節點
@@ -164,7 +179,7 @@ model.add(Dropout(0.5)) #隨機捨棄50%的神經節點
 #輸出層
 #units=10 10個神經元 因為是0-9個數字
 #kernel_initializer="normal" 使用 normal distribution 常態分佈亂數 自動初始化 weight 和 bias
-model.add(Dense(units=10,
+model.add(Dense(units=2,
 				kernel_initializer="normal",
 				activation='softmax'))
 
@@ -176,6 +191,8 @@ print(model.summary())
 #開始訓練
 #validation_split=0.2 Keras會自動將資料分成80% 訓練資料  20%測試資料
 #verbose=2 顯示訓練過程
+
+
 train_history=model.fit(x=X_Train_normalize,
 						y=y_TrainOneHot,
 						validation_split=0.1,
