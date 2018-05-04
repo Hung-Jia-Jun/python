@@ -19,8 +19,8 @@ from IPython.display import Image
 from os import listdir
 import pdb
 from os.path import isfile, join
-mypath="/Users/Jason/Desktop/CameraDetectHuman/TrainData"
-TestDataPath="/Users/Jason/Desktop/CameraDetectHuman/TestData"
+mypath="./TrainData"
+TestDataPath="./TestData"
 
 TestDatafiles = [f for f in listdir(TestDataPath) if isfile(join(TestDataPath, f))]
 onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
@@ -41,7 +41,6 @@ for file in onlyfiles:
 			for ele2 in ele:
 				AasonLine.append(ele2)
 		AllX_train_df.append(AasonLine)
-
 for file in TestDatafiles:
 	if "png" in file:
 		Test_AasonLine=[]
@@ -83,7 +82,8 @@ def plot_images_labels_prediction(images,labels,prediction,idx,num=10): #image�
 	plt.show()
 
 def PredictionOnhottoInt(prediction):
-	Predictionli=list(prediction[1:-1].split("."))
+	pdb.set_trace()
+	Predictionli=list(prediction[1:-1].split(" "))
 	try:
 		Predictionli.remove("") #清空空值
 	except:
@@ -119,7 +119,6 @@ def PreprocessData(RawData):
 numpy.random.seed(10)
 
 
-msk=numpy.random.rand(len(AllX_train_df))<0.8
 X_train_df=AllX_train_df
 
 
@@ -180,7 +179,7 @@ model.add(Dense(units=10,
 #輸出層
 #units=10 10個神經元 因為是0-9個數字
 #kernel_initializer="normal" 使用 normal distribution 常態分佈亂數 自動初始化 weight 和 bias
-model.add(Flatten())
+#model.add(Flatten())
 model.add(Dense(units=2,
 				kernel_initializer="normal",
 				activation='softmax'))
@@ -195,10 +194,10 @@ print(model.summary())
 #verbose=2 顯示訓練過程
 
 
-train_history=model.fit(x=X_Train_normalize,
-						y=y_TrainOneHot,
+train_history=model.fit(x=np.array(X_Train_normalize),
+						y=np.array(y_TrainOneHot),
 						validation_split=0.1,
-						epochs=1,
+						epochs=50,
 						batch_size=200,verbose=2)
 
 
@@ -208,16 +207,17 @@ show_train_history(train_history,'acc','val_acc')
 #show_train_history(train_history,'loss','val_loss')
 
 #評估準確度
-scores=model.evaluate(x=X_Train_normalize,y=y_TrainOneHot,)[1]
+scores=model.evaluate(x=np.array(X_Train_normalize),y=np.array(y_TrainOneHot),)[1]
 print (scores)
 
 
 
 
-
+prediction=model.predict(np.array(X_Train_normalize))
 pdb.set_trace()
 #使用模型進行預測
-prediction=model.predict(X_Test_normalize)
+#prediction=model.predict(np.array(X_Train_normalize).reshape((8785946,-1))  )
+
 
 for ele in prediction:
 	result=PredictionOnhottoInt(str(ele))
