@@ -4,7 +4,7 @@ import numpy
 import pandas as pd
 from sklearn import preprocessing
 from keras.models import Sequential
-from keras.layers import Dense,Dropout
+from keras.layers import Dense,Dropout,Flatten
 import pdb
 from keras.utils import np_utils
 from keras.datasets import mnist
@@ -162,23 +162,25 @@ model=Sequential()
 #704*480
 #units=1000 隱藏層1000神經元
 #input_dim=337920 輸入層 337920個
-model.add(Dense(units=1000,
+model.add(Dense(units=10,
 				input_dim=8785946,
 				kernel_initializer="uniform",
 				activation='relu'))
 
-model.add(Dropout(0.5)) #隨機捨棄50%的神經節點
+#model.add(Dropout(0.5)) #隨機捨棄50%的神經節點
+
 
 #隱藏層
-model.add(Dense(units=1000,
+model.add(Dense(units=10,
 				input_dim=8785946,
 				kernel_initializer="uniform",
 				activation='relu'))
-model.add(Dropout(0.5)) #隨機捨棄50%的神經節點
+#model.add(Dropout(0.5)) #隨機捨棄50%的神經節點
 
 #輸出層
 #units=10 10個神經元 因為是0-9個數字
 #kernel_initializer="normal" 使用 normal distribution 常態分佈亂數 自動初始化 weight 和 bias
+model.add(Flatten())
 model.add(Dense(units=2,
 				kernel_initializer="normal",
 				activation='softmax'))
@@ -196,7 +198,7 @@ print(model.summary())
 train_history=model.fit(x=X_Train_normalize,
 						y=y_TrainOneHot,
 						validation_split=0.1,
-						epochs=5,
+						epochs=1,
 						batch_size=200,verbose=2)
 
 
@@ -213,22 +215,9 @@ print (scores)
 
 
 
-
-
-f2=open("test (1).csv")
-Col2=f2.readline()
-fileX_test_df=pd.read_csv("test (1).csv")
-cols=Col2.split(",")
-cols[len(cols)-1]=cols[len(cols)-1].replace("\n","")
-fileX_test_df=fileX_test_df[cols]
-
-fileX_Test=fileX_test_df.values
-filey_test_label=fileX_test_df["label"]
-FileX_Test_normalize=fileX_Test/255
-Filey_TestOneHot=np_utils.to_categorical(filey_test_label)
-
+pdb.set_trace()
 #使用模型進行預測
-prediction=model.predict(fileX_Test)
+prediction=model.predict(X_Test_normalize)
 
 for ele in prediction:
 	result=PredictionOnhottoInt(str(ele))
