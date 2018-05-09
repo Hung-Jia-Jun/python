@@ -1,1 +1,1 @@
-[![Train]][/python/master/DeepLearningPrediction/Result.PNG]
+![image](/python/master/DeepLearningPrediction/Result.PNG)
