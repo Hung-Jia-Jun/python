@@ -68,7 +68,6 @@ for Area in AreaLi:
 	NowPage=0
 	for Company_json in Company_jsonLi: 
 		NowPage+=1
-		time.sleep(10)
 		for ele in Company_json['data']['list']:
 			公司名稱=""
 			產業別=""
