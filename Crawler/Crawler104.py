@@ -1,9 +1,3 @@
-
-# coding: utf-8
-
-# In[1]:
-
-
 # coding: utf-8
 import requests
 from bs4 import BeautifulSoup
@@ -73,7 +67,7 @@ for Company_json in Company_jsonLi:
         print (num,cusBaseUrl+ele['custUrl'].split("c/")[1])
 # In[3]:
 
-download_dir = "Export.csv"
+download_dir = "Export_104.csv"
 
 csv = open(download_dir, "w+",encoding='utf-8') 
 
