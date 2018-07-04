@@ -1,3 +1,9 @@
+
+# coding: utf-8
+
+# In[1]:
+
+
 # coding: utf-8
 import requests
 from bs4 import BeautifulSoup
@@ -8,7 +14,7 @@ import time
 import pdb
 from tqdm import tqdm_notebook
 from tqdm import tqdm as CMDtqdm
-
+import codecs
 
 
 #設定Session與header
@@ -58,18 +64,17 @@ for Area in CMDtqdm(AreaLi):
         Company_JsonStr=ComDatareq.text
         Company_jsonLi.append(json.loads(Company_JsonStr))
         
-    print (Area,totalpage)
 
 num=0
 for Company_json in Company_jsonLi:
     for ele in Company_json['data']['list']:
         num+=1
-        print (num,cusBaseUrl+ele['custUrl'].split("c/")[1])
+        #print (num,cusBaseUrl+ele['custUrl'].split("c/")[1])
 # In[3]:
 
 download_dir = "Export_104.csv"
 
-csv = open(download_dir, "w+",encoding='utf-8') 
+csv = codecs.open(download_dir, "w+",'utf_8_sig') 
 
 #定義CSV資料欄位
 columnTitleRow = "公司名稱,產業別, 產業說明, 員工人數, 資本額, 聯絡人, 地址, 電話, 傳真, 公司網址, 公司簡介, 商品與服務\n"
@@ -177,7 +182,7 @@ for Company_json in CMDtqdm(Company_jsonLi):
         #print (NowPage,TotalCompany,公司名稱)
         row=row.replace("\n","").replace("\r","")
         try:
-            csv = open(download_dir, "a+",encoding='utf-8') 
+            csv = codecs.open(download_dir, "a+",'utf_8_sig') 
             csv.write(row.encode(sys.stdin.encoding, "replace").decode(sys.stdin.encoding))
             csv.write("\n")
             csv.close()
