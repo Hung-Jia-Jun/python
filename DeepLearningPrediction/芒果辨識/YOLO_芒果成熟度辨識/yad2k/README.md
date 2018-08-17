@@ -1,13 +1,18 @@
 # 目錄
-  * [芒果成熟度辨識](#芒果成熟度辨識)
-  * [處理後機器看到的圖像](#處理後機器看到的圖像)
   * [如何使用本程式](#如何使用本程式)
+  * [芒果成熟度辨識](#芒果成熟度辨識)
+  * [機器看到的圖像](#處理後機器看到的圖像)
+
+
+
 
 # 芒果成熟度辨識
 ### 在環境中，要使用機械手臂來摘採芒果
 ### 一般都是透過人工摘採
 ### 或是透過機械手臂摘採
 ![](http://www.merit-times.com.tw/news_pic/20170506/825448_592833.jpg)
+
+[回到目錄](#目錄)
 
 ### 這個成熟度引擎可以檢測出下列資料
 * 成熟度
@@ -16,6 +21,8 @@
 
 ## 未處理前，原始圖像
 ![](https://github.com/Hung-Jia-Jun/python/blob/master/DeepLearningPrediction/%E8%8A%92%E6%9E%9C%E8%BE%A8%E8%AD%98/YOLO_%E8%8A%92%E6%9E%9C%E6%88%90%E7%86%9F%E5%BA%A6%E8%BE%A8%E8%AD%98/yad2k/images/MangoTree_797.jpg)
+
+[回到目錄](#目錄)
 
 ## 處理後機器看到的圖像  
 * Maturity
@@ -26,19 +33,28 @@
   * 發送給機械手臂的座標
 ![](https://github.com/Hung-Jia-Jun/python/blob/master/DeepLearningPrediction/%E8%8A%92%E6%9E%9C%E8%BE%A8%E8%AD%98/YOLO_%E8%8A%92%E6%9E%9C%E6%88%90%E7%86%9F%E5%BA%A6%E8%BE%A8%E8%AD%98/yad2k/images/out/MangoTree_797.jpg)
 
+[回到目錄](#目錄)
 
 ### 程式也能處理受到葉子遮擋的芒果，並取得正確的位置與成熟度預測
 
 ![](https://github.com/Hung-Jia-Jun/python/blob/master/DeepLearningPrediction/%E8%8A%92%E6%9E%9C%E8%BE%A8%E8%AD%98/YOLO_%E8%8A%92%E6%9E%9C%E6%88%90%E7%86%9F%E5%BA%A6%E8%BE%A8%E8%AD%98/yad2k/images/out/MangoTree_806.jpg)
 
+[回到目錄](#目錄)
+
 ### 晴天、雨天影像都會自動補全 成熟度不會受到影響
 ![](https://github.com/Hung-Jia-Jun/python/blob/master/DeepLearningPrediction/%E8%8A%92%E6%9E%9C%E8%BE%A8%E8%AD%98/YOLO_%E8%8A%92%E6%9E%9C%E6%88%90%E7%86%9F%E5%BA%A6%E8%BE%A8%E8%AD%98/yad2k/images/out/MangoTree_816.jpg)
+
+[回到目錄](#目錄)
 
 ### 摘採後對採果車內的芒果做辨識也通用，也能檢測出該採果車的平均成熟日期
 ![](https://github.com/Hung-Jia-Jun/python/blob/master/DeepLearningPrediction/%E8%8A%92%E6%9E%9C%E8%BE%A8%E8%AD%98/YOLO_%E8%8A%92%E6%9E%9C%E6%88%90%E7%86%9F%E5%BA%A6%E8%BE%A8%E8%AD%98/yad2k/images/out/MangoTree_804.jpg)
 
+[回到目錄](#目錄)
+
 ### 搭配攝影機縮放，將可對遠距離的芒果樹做預測，不用親自將機器移動過去
 ![](https://github.com/Hung-Jia-Jun/python/blob/master/DeepLearningPrediction/%E8%8A%92%E6%9E%9C%E8%BE%A8%E8%AD%98/YOLO_%E8%8A%92%E6%9E%9C%E6%88%90%E7%86%9F%E5%BA%A6%E8%BE%A8%E8%AD%98/yad2k/images/out/MangoTree_802.jpg)
+
+[回到目錄](#目錄)
 
 # 如何使用本程式
 ## Requirements
@@ -50,7 +66,9 @@
 - [Pillow](https://pillow.readthedocs.io/) (For rendering test results.)
 - [Python 3](https://www.python.org/)
 - [pydot-ng](https://github.com/pydot/pydot-ng) (Optional for plotting model.)
-- [OpenCV](#安裝OpenCV)
+- [OpenCV](#【準備工作】)
+
+[回到目錄](#目錄)
 
 
 
@@ -64,3 +82,5 @@
 ## 【正式步驟】
 1. 進入https://www.lfd.uci.edu/~gohlke/pythonlibs/#opencv
 2. 根據之前python的版本決定下載whl格式文件，下載後進入文件所在位置，命令行輸入pip install * .whl
+
+[回到目錄](#目錄)
