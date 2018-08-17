@@ -1,5 +1,6 @@
 # 目錄
   * [如何使用本程式](#如何使用本程式)
+  * [開始執行輸出辨識圖片](#開始執行輸出辨識圖片)
   * [芒果成熟度辨識](#芒果成熟度辨識)
   * [機器看到的圖像](#處理後機器看到的圖像)
 
@@ -84,3 +85,25 @@
 2. 根據之前python的版本決定下載whl格式文件，下載後進入文件所在位置，命令行輸入pip install * .whl
 
 [回到目錄](#目錄)
+
+
+# 開始執行輸出辨識圖片
+下載整個我寫的 python 庫
+https://github.com/Hung-Jia-Jun/python/archive/master.zip
+
+1. 進入指定的下載內容資料夾路徑
+   * python-master\python-master\DeepLearningPrediction\芒果辨識\YOLO_芒果成熟度辨識\yad2k
+
+2. 點擊 Start.bat
+3. 程式會讀取 圖片來源資料夾內所有的圖片
+   * 來源資料夾python-master\python-master\DeepLearningPrediction\芒果辨識\YOLO_芒果成熟度辨識\yad2k\images
+   
+   
+4. 輸出內容會在 
+   * 結果資料夾 : python-master\python-master\DeepLearningPrediction\芒果辨識\YOLO_芒果成熟度辨識\yad2k\images\out
+   * 並跟原始資料夾的檔名一樣
+   
+[回到目錄](#目錄)   
+
+
+
