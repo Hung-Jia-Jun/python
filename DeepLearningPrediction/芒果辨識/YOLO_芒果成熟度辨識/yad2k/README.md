@@ -1,1 +1,66 @@
+# 目錄
+  * [芒果成熟度辨識](#芒果成熟度辨識)
+  * [處理後機器看到的圖像](#處理後機器看到的圖像)
+  * [如何使用本程式](#如何使用本程式)
+
 # 芒果成熟度辨識
+### 在環境中，要使用機械手臂來摘採芒果
+### 一般都是透過人工摘採
+### 或是透過機械手臂摘採
+![](http://www.merit-times.com.tw/news_pic/20170506/825448_592833.jpg)
+
+### 這個成熟度引擎可以檢測出下列資料
+* 成熟度
+* 還有幾天過期
+* 機械手臂目標座標
+
+## 未處理前，原始圖像
+![](https://github.com/Hung-Jia-Jun/python/blob/master/DeepLearningPrediction/%E8%8A%92%E6%9E%9C%E8%BE%A8%E8%AD%98/YOLO_%E8%8A%92%E6%9E%9C%E6%88%90%E7%86%9F%E5%BA%A6%E8%BE%A8%E8%AD%98/yad2k/images/MangoTree_797.jpg)
+
+## 處理後機器看到的圖像  
+* Maturity
+  * 距離到期日還有幾天 
+* 49.74% 
+  * 機器預測目前成熟度0-100%等百分量級
+* Position
+  * 發送給機械手臂的座標
+![](https://github.com/Hung-Jia-Jun/python/blob/master/DeepLearningPrediction/%E8%8A%92%E6%9E%9C%E8%BE%A8%E8%AD%98/YOLO_%E8%8A%92%E6%9E%9C%E6%88%90%E7%86%9F%E5%BA%A6%E8%BE%A8%E8%AD%98/yad2k/images/out/MangoTree_797.jpg)
+
+
+### 程式也能處理受到葉子遮擋的芒果，並取得正確的位置與成熟度預測
+
+![](https://github.com/Hung-Jia-Jun/python/blob/master/DeepLearningPrediction/%E8%8A%92%E6%9E%9C%E8%BE%A8%E8%AD%98/YOLO_%E8%8A%92%E6%9E%9C%E6%88%90%E7%86%9F%E5%BA%A6%E8%BE%A8%E8%AD%98/yad2k/images/out/MangoTree_806.jpg)
+
+### 晴天、雨天影像都會自動補全 成熟度不會受到影響
+![](https://github.com/Hung-Jia-Jun/python/blob/master/DeepLearningPrediction/%E8%8A%92%E6%9E%9C%E8%BE%A8%E8%AD%98/YOLO_%E8%8A%92%E6%9E%9C%E6%88%90%E7%86%9F%E5%BA%A6%E8%BE%A8%E8%AD%98/yad2k/images/out/MangoTree_816.jpg)
+
+### 摘採後對採果車內的芒果做辨識也通用，也能檢測出該採果車的平均成熟日期
+![](https://github.com/Hung-Jia-Jun/python/blob/master/DeepLearningPrediction/%E8%8A%92%E6%9E%9C%E8%BE%A8%E8%AD%98/YOLO_%E8%8A%92%E6%9E%9C%E6%88%90%E7%86%9F%E5%BA%A6%E8%BE%A8%E8%AD%98/yad2k/images/out/MangoTree_804.jpg)
+
+### 搭配攝影機縮放，將可對遠距離的芒果樹做預測，不用親自將機器移動過去
+![](https://github.com/Hung-Jia-Jun/python/blob/master/DeepLearningPrediction/%E8%8A%92%E6%9E%9C%E8%BE%A8%E8%AD%98/YOLO_%E8%8A%92%E6%9E%9C%E6%88%90%E7%86%9F%E5%BA%A6%E8%BE%A8%E8%AD%98/yad2k/images/out/MangoTree_802.jpg)
+
+# 如何使用本程式
+## Requirements
+
+- [Keras](https://github.com/fchollet/keras)
+- [Tensorflow](https://www.tensorflow.org/)
+- [Numpy](http://www.numpy.org/)
+- [h5py](http://www.h5py.org/) (For Keras model serialization.)
+- [Pillow](https://pillow.readthedocs.io/) (For rendering test results.)
+- [Python 3](https://www.python.org/)
+- [pydot-ng](https://github.com/pydot/pydot-ng) (Optional for plotting model.)
+- [OpenCV](#安裝OpenCV)
+
+
+
+## 【準備工作】
+1. 首先安裝python，pip，numpy
+2. 安裝教程參考以前的文章：
+3. 安裝python：http://blog.csdn.net/lyj_viviani/article/details/51763101 
+4. 安裝pip： http://blog.csdn.net/lyj_viviani/article/details/70568434 
+5. 安裝numpy：使用命令行輸入pip install numpy即可自動安裝
+
+## 【正式步驟】
+1. 進入https://www.lfd.uci.edu/~gohlke/pythonlibs/#opencv
+2. 根據之前python的版本決定下載whl格式文件，下載後進入文件所在位置，命令行輸入pip install * .whl
