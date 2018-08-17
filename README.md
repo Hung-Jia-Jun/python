@@ -1,9 +1,10 @@
 # python
 # 近期專案
-  * [芒果成熟度檢測](https://github.com/Hung-Jia-Jun/python/blob/master/DeepLearningPrediction/%E8%8A%92%E6%9E%9C%E8%BE%A8%E8%AD%98/YOLO_%E8%8A%92%E6%9E%9C%E6%88%90%E7%86%9F%E5%BA%A6%E8%BE%A8%E8%AD%98/yad2k/README.md#%E6%BA%96%E5%82%99%E5%B7%A5%E4%BD%9C)
+  * [芒果成熟度檢測](https://github.com/Hung-Jia-Jun/python/blob/master/DeepLearningPrediction/%E8%8A%92%E6%9E%9C%E8%BE%A8%E8%AD%98/YOLO_%E8%8A%92%E6%9E%9C%E6%88%90%E7%86%9F%E5%BA%A6%E8%BE%A8%E8%AD%98/yad2k/README.md)
 
   * [雜草種類辨識](https://github.com/Hung-Jia-Jun/python/tree/master/DeepLearningPrediction/Kaggle_CNN_%E9%9B%9C%E8%8D%89%E6%AA%A2%E6%B8%AC)
-
+  
+  * [手寫辨識](https://github.com/Hung-Jia-Jun/python/tree/master/DeepLearningPrediction)
 
 ## 參賽紀錄：
 ### Kaggle Deep learning深度學習競賽平台
