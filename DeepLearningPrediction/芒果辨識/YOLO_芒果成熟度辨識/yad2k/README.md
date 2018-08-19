@@ -94,8 +94,8 @@
 
 
 # 開始執行輸出辨識圖片
-下載整個我寫的 python 庫
-https://github.com/Hung-Jia-Jun/python/archive/master.zip
+
+[下載整個我寫的 python 庫](https://github.com/Hung-Jia-Jun/python/archive/master.zip)
 
 1. 進入指定的下載內容資料夾路徑
    * python-master\python-master\DeepLearningPrediction\芒果辨識\YOLO_芒果成熟度辨識\yad2k
