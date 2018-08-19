@@ -42,7 +42,7 @@
 
 [回到目錄](#目錄)
 
-### 晴天、雨天影像都會自動補全 成熟度不會受到影響
+### 晴天、雨天影像都會自動補全 辨識成熟度的效果也不會受到影響
 ![](https://github.com/Hung-Jia-Jun/python/blob/master/DeepLearningPrediction/%E8%8A%92%E6%9E%9C%E8%BE%A8%E8%AD%98/YOLO_%E8%8A%92%E6%9E%9C%E6%88%90%E7%86%9F%E5%BA%A6%E8%BE%A8%E8%AD%98/yad2k/images/out/MangoTree_816.jpg)
 
 [回到目錄](#目錄)
@@ -83,6 +83,12 @@
 ## 【正式步驟】
 1. 進入https://www.lfd.uci.edu/~gohlke/pythonlibs/#opencv
 2. 根據之前python的版本決定下載whl格式文件，下載後進入文件所在位置，命令行輸入pip install * .whl
+
+## 【安裝Anaconda】
+1. [Anaconda官方網站](https://anaconda.org/)
+2. 依照當前windows版本進行安裝
+3. 使用Anaconda的 Terminal 安裝Tensorflow
+4. 在Terminal 輸入 pip install tensorflow
 
 [回到目錄](#目錄)
 
