@@ -120,27 +120,23 @@ class SLICProcessor(object):
 		# 變數初始化
 		tf.global_variables_initializer().run() 
 		
-		for cluster in self.clusters:
-			for h in tqdm(range(cluster.h - 2 * self.S, cluster.h + 2 * self.S)):
+		for cluster in tqdm(self.clusters):
+			for h in range(cluster.h - 2 * self.S, cluster.h + 2 * self.S):
 				if h < 0 or h >= self.image_height: continue
 				#待計算的Data
 				for w in range(cluster.w - 2 * self.S, cluster.w + 2 * self.S):
 					if w < 0 or w >= self.image_width: continue
 					L, A, B = self.data[h][w]
-					Dc = tf.sqrt(
-						tf.pow(L - cluster.l*1.0, 2.0) +
-						tf.pow(A - cluster.a*1.0, 2.0) +
-						tf.pow(B - cluster.b*1.0, 2.0))
-
-					Ds = tf.sqrt(
-						tf.pow(h - cluster.h*1.0, 2.0) +
-						tf.pow(w - cluster.w*1.0, 2.0))
-
-					D =  tf.sqrt( tf.cast(tf.pow(Dc / self.M*1.0, 2.0),tf.float64) +  
-							tf.cast(tf.pow(Ds / self.S*1.0, 2.0),tf.float64))
-					DValue=sess.run(D)
+					Dc = math.sqrt(
+						math.pow(L - cluster.l, 2) +
+						math.pow(A - cluster.a, 2) +
+						math.pow(B - cluster.b, 2))
+					Ds = math.sqrt(
+						math.pow(h - cluster.h, 2) +
+						math.pow(w - cluster.w, 2))
+					D = math.sqrt(math.pow(Dc / self.M, 2) + math.pow(Ds / self.S, 2))
 					#print (DValue)
-					if DValue < self.dis[h][w]:
+					if D < self.dis[h][w]:
 						if (h, w) not in self.label:
 							self.label[(h, w)] = cluster
 							cluster.pixels.append((h, w))
@@ -148,7 +144,7 @@ class SLICProcessor(object):
 							self.label[(h, w)].pixels.remove((h, w))
 							self.label[(h, w)] = cluster
 							cluster.pixels.append((h, w))
-						self.dis[h][w] = DValue
+						self.dis[h][w] = D
 					
 
 	def update_cluster(self):
@@ -178,7 +174,7 @@ class SLICProcessor(object):
 	def iterate_10times(self):
 		self.init_clusters()
 		self.move_clusters()
-		for i in trange(10):
+		for i in trange(1):
 			self.assignment()
 			self.update_cluster()
 			name = 'lenna_M{m}_K{k}_loop{loop}.png'.format(loop=i, m=self.M, k=self.K)
@@ -186,5 +182,5 @@ class SLICProcessor(object):
 
 
 if __name__ == '__main__':
-	p = SLICProcessor('Lenna.png', 200, 40)
+	p = SLICProcessor('Lenna.png', 500, 30)
 	p.iterate_10times()
