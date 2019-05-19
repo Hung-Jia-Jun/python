@@ -61,7 +61,7 @@ def upload(file):
         ftp.storlines("STOR " + file, open(file))
     else:
         ftp.storbinary("STOR " + file, open(file, "rb"), 1024)
-    #os.remove(file)
+    os.remove(file)
     
     
 
