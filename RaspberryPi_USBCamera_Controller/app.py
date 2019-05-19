@@ -75,6 +75,8 @@ multiprocessing.Process(target=Camera.Open,args=(q,)).start()
 
 @app.route("/Pic")
 def Pic():
+    #新增一個等待對焦的延時
+    time.sleep(2)
     multiprocessing.Process(target=Camera.SaveImage,args=(q,)).start()
     return "OK"
 
