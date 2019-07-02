@@ -12,8 +12,8 @@ import pdb
 from LinepayAPP.classLib import *
 #from LinepayAPP.models import clientSession
 
-line_bot_api = LineBotApi('XNE8bmST6IvwcucMwcc04BpW1Elj5PfdrO4c3LWHck+6/ajJj3GkwsbCHFKf9bZoMdZTpGWLFgHw9ThHNk7iK33xZkR6+QalKa5qOCaqi5JrLa6R8Madhr98iBStVZxnd19+ZbrBhPeZkyQI26xSmgdB04t89/1O/w1cDnyilFU=')
-handler = WebhookHandler('4cd68a056f75e966b7e05d21fc9990db')
+line_bot_api = LineBotApi("Line機器人API")
+handler = WebhookHandler('WebHookkey')
 
 @csrf_exempt
 def callback(request):
