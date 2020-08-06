@@ -1,0 +1,1 @@
+python -m PyInstaller -F backdoor_server.py
