@@ -74,7 +74,7 @@ def Read_Txt():
 
 Read_Txt()
 
-#client = LineClient(authToken="E8KgMu44vmkA7m4Nhv30.YscyjjrBJvRwlj43Q3diOa./6pH4n6MhuUtN11JzTvHSUbFcbiNrf+s+ojB5x0ne7Q=")
+#client = LineClient(authToken="")
 
 
 Line_user=Txt_io(0)
