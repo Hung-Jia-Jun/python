@@ -26,12 +26,6 @@ from linebot.models import (
 import pdb
 app = Flask(__name__)
 
-"""
-ACCESS_TOKEN="Pk6Wrq32ctiw/gk/7/fPT3/VHXoINfdCk1mLf5OkKygSREGK7M9xuj1AoJImmAye1u42ad+UMUlZOBfoTkvxLmddKFaOf3mrpE6fyp75Wx8d2Q7a18kkWU9oW42sJsDg7lM/MuzX5ic4dztlhtQEjgdB04t89/1O/w1cDnyilFU="
-SECRET="f6cc92ff12e1b2bc625b8a2604918117"
-PORT=5000
-HOST='127.0.0.1'
-"""
 ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN')
 SECRET = os.environ.get('SECRET')
 PORT=int(os.environ.get('PORT'))
@@ -58,7 +52,7 @@ def index():
 
 @app.route('/PushMsg/')
 def PushMsg():
-	#line_bot_api.multicast(['Ue2a91beba135696d6b7cafad52e51587'], 
+	#line_bot_api.multicast([''], 
 	#TextSendMessage(text=username))
 	return "OK"
 
