@@ -8,11 +8,11 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 def StartRandomChat(sessionToken):
 	headers = {
-			#"X-Parse-Session-Token":"r:7a8445d79a2986668776faf1417e7413",
+			#"X-Parse-Session-Token":"r:0000000000000000000000000000000000",
 			"X-Parse-Session-Token":sessionToken,
-			"X-Parse-Application-Id":"fUEmHsDqbr9v73s4JBx0CwANjDJjoMcDFlrGqgY5",
-			"X-Parse-Installation-Id":"d9575738-8cd2-42ad-ac47-a7d782481f7e"
-			#"X-Parse-Installation-Id":"7ec9ce9a-ea97-4904-ad9e-4a3b39081372"
+			"X-Parse-Application-Id":"0000000000000000000000000000000000",
+			"X-Parse-Installation-Id":"0000000000000000000000000000000000"
+			#"X-Parse-Installation-Id":"0000000000000000000000000000000000"
 			}
 	payload={
 	"platform": "ios",
@@ -35,11 +35,11 @@ def SendRandomChatMsg(sessionToken): #發送隨機聊天的訊息
 		return None
 	else:
 		headers = {
-			#"X-Parse-Session-Token":"r:7a8445d79a2986668776faf1417e7413",
+			#"X-Parse-Session-Token":"0000000000000000000000000000000000",
 			"X-Parse-Session-Token":sessionToken,
-			"X-Parse-Application-Id":"fUEmHsDqbr9v73s4JBx0CwANjDJjoMcDFlrGqgY5",
-			"X-Parse-Installation-Id":"d9575738-8cd2-42ad-ac47-a7d782481f7e"
-			#"X-Parse-Installation-Id":"7ec9ce9a-ea97-4904-ad9e-4a3b39081372"
+			"X-Parse-Application-Id":"0000000000000000000000000000000000",
+			"X-Parse-Installation-Id":"0000000000000000000000000000000000"
+			#"X-Parse-Installation-Id":"0000000000000000000000000000000000"
 			}
 		payload = {
 		"dialogue": ObjectID,
@@ -64,10 +64,10 @@ IsSendList=[] #已發送訊息的列表
 
 def Login(Username,Password):
 	headers = {
-			"X-Parse-Session-Token":"r:35f0141811f0babe645e20f3a19abe01",
-			"X-Parse-Application-Id":"fUEmHsDqbr9v73s4JBx0CwANjDJjoMcDFlrGqgY5",
-			"X-Parse-Installation-Id":"d9575738-8cd2-42ad-ac47-a7d782481f7e"
-			#"X-Parse-Installation-Id":"7ec9ce9a-ea97-4904-ad9e-4a3b39081372"
+			"X-Parse-Session-Token":"0000000000000000000000000000000000",
+			"X-Parse-Application-Id":"0000000000000000000000000000000000",
+			"X-Parse-Installation-Id":"0000000000000000000000000000000000"
+			#"X-Parse-Installation-Id":"0000000000000000000000000000000000"
 			}
 	payload={
 	"_method": "GET",
@@ -83,7 +83,6 @@ Password=input("請輸入密碼:")
 FuckMessages=input("請輸入要發的訊息:")
 sessionToken=Login(Username,Password)
 while True:
-	#req = requests.get('https://ps.pndsn.com/v2/subscribe/sub-c-24884386-3cf2-11e5-8d55-0619f8945a4f/9tM11YKWRN,DlpLqXVl4R,L8VRfrgFxI/0?deviceid=826FCAA8-9DBF-42C2-A01F-879F925F823F&uuid=9tM11YKWRN&pnsdk=PubNub-ObjC-iOS%2F4.6.1&auth=9tM11YKWRN1516626228&tt=15188086761225512',verify=False)
 	#Reqtext=req.text
 	#threading.Thread(target=SendRandomChatMsg,args=(sessionToken,)).start() #建立隨機聊天並發送訊息
 	SendRandomChatMsg(sessionToken)
